@@ -64,6 +64,7 @@
 
     #hero {
       min-height: 100vh;
+      width: 100vw;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -367,7 +368,14 @@
     .easter-item:hover .easter-item-overlay { opacity: 1; }
     .easter-item-label { font-size: 0.72rem; color: white; letter-spacing: 0.1em; text-align: center; padding: 0.5rem; }
 
-    .contact-row { display: flex; gap: 3rem; margin-top: 3.5rem; flex-wrap: wrap; justify-content: center; }
+    .contact-row {
+      display: flex;
+      gap: 5rem;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
 
     .contact-item a {
       text-decoration: none;
@@ -383,8 +391,8 @@
     footer {
       border-top: 0.5px solid var(--border);
       padding: 2rem 3rem;
-      max-width: 1100px;
-      margin: 0 auto;
+      width: 100%;
+      text-align: center;
     }
 
     footer p { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.06em; }
@@ -418,7 +426,7 @@
     </ul>
   </nav>
 
-  <section id="hero">
+  <div id="hero">
     <div class="hero-bg-text">Cider</div>
     <div class="hero-content">
       <p class="hero-label fade-in">Content · Film · Visual</p>
@@ -430,13 +438,13 @@
       <div class="scroll-line"></div>
       <span>Scroll</span>
     </div>
-  </section>
+  </div>
 
   <div class="band">
     <section id="intro">
       <div class="intro-grid">
         <div class="intro-photo fade-in">
-          <img src="assets/portrait.jpg" alt="Cider 钟月渟" />
+          <img src="assets/portrait.JPG" alt="Cider 钟月渟" />
         </div>
         <div>
           <p class="section-label fade-in">Hello</p>
@@ -574,7 +582,7 @@
     </section>
   </div>
 
-  <footer style="text-align:center;"><p>© 2026 Cider</p></footer>
+  <footer><p>© 2026 Cider</p></footer>
 
   <script>
     const observer = new IntersectionObserver((entries) => {
