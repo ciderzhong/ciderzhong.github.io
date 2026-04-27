@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cider 钟月渟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-start: #E8E4F0;
+      --bg-end: #F5F0E8;
+      --lavender: #6A5E90;
+      --lavender-light: #A898C8;
+      --lavender-pale: #D8D0EC;
+      --text: #2A2440;
+      --text-muted: #7A6E98;
+      --border: rgba(140, 128, 180, 0.18);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+      background: rgba(232, 228, 240, 0.82);
+      backdrop-filter: blur(14px);
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .nav-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--lavender);
+    }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--lavender); }
+
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(160deg, #E8E4F0 0%, #EDE8F2 35%, #F0EBF0 60%, #F2EDE8 80%, #F5F0E8 100%);
+    }
+
+    .hero-bg-text {
+      position: absolute;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22vw;
+      font-weight: 300;
+      color: rgba(140, 128, 180, 0.05);
+      user-select: none;
+      white-space: nowrap;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-content { text-align: center; position: relative; }
+
+    .hero-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lavender-light);
+      margin-bottom: 2rem;
+    }
+
+    .hero-divider {
+      width: 36px; height: 0.5px;
+      background: var(--lavender-pale);
+      margin: 0 auto 2rem;
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      color: var(--text);
+      line-height: 1.9;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-tagline-en {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      margin-top: 0.5rem;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 3rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      animation: float 2.2s ease-in-out infinite;
+    }
+
+    .scroll-line {
+      width: 0.5px; height: 36px;
+      background: linear-gradient(to bottom, var(--lavender-light), transparent);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(7px); }
+    }
+
+    /* Intro: warm cream continuing from hero */
+    .band { background: #F5F0E8; }
+    /* All sections after intro: lavender purple */
+    .band-alt { background: #EEEAF4; }
+    .band-purple { background: linear-gradient(160deg, #E8E4F0 0%, #EDE8F2 60%, #EEEAF4 100%); }
+
+    section {
+      padding: 7rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--lavender-light);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 3rem;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .intro-photo { position: relative; }
+
+    .intro-photo img {
+      width: 100%; height: 560px;
+      object-fit: cover;
+      object-position: center top;
+      filter: saturate(0.92) contrast(0.96) brightness(1.02);
+    }
+
+    .intro-photo::after {
+      content: '';
+      position: absolute;
+      inset: 12px -12px -12px 12px;
+      border: 0.5px solid var(--lavender-pale);
+      z-index: -1;
+    }
+
+    .intro-bio { font-size: 0.95rem; line-height: 2; color: var(--text); margin-bottom: 0.5rem; }
+    .intro-bio-sub { font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 2rem; }
+
+    .intro-bio-zh {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 0.88rem;
+      line-height: 2.2;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .intro-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    .tag {
+      padding: 0.3rem 1rem;
+      border: 0.5px solid var(--lavender-pale);
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--lavender);
+      border-radius: 20px;
+    }
+
+    #portfolio { border-top: 0.5px solid var(--border); }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px;
+      background: var(--border);
+      border: 0.5px solid var(--border);
+    }
+
+    .portfolio-item {
+      padding: 3rem;
+      cursor: pointer;
+      transition: background 0.4s;
+      position: relative;
+      overflow: hidden;
+      min-height: 260px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #F5F0F8, #EEE8F5);
+    }
+
+    .portfolio-item:hover { background: linear-gradient(135deg, #EDE6F5, #E4DCF0); }
+
+    .portfolio-item-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 4rem;
+      font-weight: 300;
+      color: rgba(140, 128, 180, 0.2);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .portfolio-item-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+
+    .portfolio-item-title-zh {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .portfolio-item-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.7; }
+
+    .portfolio-arrow {
+      position: absolute;
+      bottom: 2rem; right: 2rem;
+      font-size: 1.1rem;
+      color: var(--lavender);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .portfolio-item:hover .portfolio-arrow { opacity: 1; transform: translateX(0); }
+
+    #experience { border-top: 0.5px solid var(--border); }
+
+    .timeline { position: relative; padding-left: 2.5rem; }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0.5rem; bottom: 0;
+      width: 0.5px;
+      background: linear-gradient(to bottom, var(--lavender-light), transparent);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 4rem;
+      padding-bottom: 4rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .timeline-item:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .timeline-dot {
+      position: absolute;
+      left: -2.5rem; top: 0.4rem;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--lavender);
+      transform: translateX(-3px);
+    }
+
+    .timeline-year { font-size: 0.72rem; letter-spacing: 0.15em; color: var(--lavender-light); margin-bottom: 0.5rem; text-transform: uppercase; }
+    .timeline-role { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; color: var(--text); margin-bottom: 0.25rem; }
+    .timeline-org { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.2rem; letter-spacing: 0.05em; }
+    .timeline-desc { font-size: 0.88rem; line-height: 1.9; color: var(--text); max-width: 600px; }
+
+    #about { border-top: 0.5px solid var(--border); }
+
+    .id-card {
+      border: 0.5px solid var(--lavender-pale);
+      padding: 2.5rem;
+      max-width: 420px;
+      position: relative;
+      margin-bottom: 5rem;
+      background: rgba(255,255,255,0.35);
+    }
+
+    .id-card::before {
+      content: 'PERSONAL ID';
+      position: absolute;
+      top: -0.5rem; left: 1.5rem;
+      background: #E8E4F0;
+      padding: 0 0.5rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      color: var(--lavender-light);
+    }
+
+    .id-card-name { font-family: 'Noto Serif SC', serif; font-size: 1.8rem; font-weight: 300; color: var(--text); margin-bottom: 0.25rem; }
+    .id-card-name-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: var(--lavender); margin-bottom: 1.5rem; }
+    .id-card-row { display: flex; gap: 1rem; margin-bottom: 0.6rem; font-size: 0.8rem; }
+    .id-card-label { color: var(--text-muted); min-width: 80px; }
+    .id-card-value { color: var(--text); }
+
+    .easter-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+    .easter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+    .easter-item { position: relative; aspect-ratio: 1; overflow: hidden; cursor: pointer; }
+
+    .easter-item img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      transition: transform 0.4s ease;
+      mix-blend-mode: multiply;
+    }
+
+    .easter-item:hover img { transform: scale(1.08); }
+
+    .easter-item-overlay {
+      position: absolute; inset: 0;
+      background: rgba(106, 94, 144, 0.82);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    .easter-item:hover .easter-item-overlay { opacity: 1; }
+    .easter-item-label { font-size: 0.72rem; color: white; letter-spacing: 0.1em; text-align: center; padding: 0.5rem; }
+
+    .contact-row { display: flex; gap: 3rem; margin-top: 3.5rem; flex-wrap: wrap; justify-content: center; }
+
+    .contact-item a {
+      text-decoration: none;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      transition: color 0.3s;
+      display: flex; flex-direction: column; gap: 0.3rem;
+    }
+
+    .contact-item a:hover { color: var(--lavender); }
+    .contact-platform { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lavender-light); }
+
+    footer {
+      border-top: 0.5px solid var(--border);
+      padding: 2rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    footer p { font-size: 0.72rem; color: var(--text-muted); letter-spacing: 0.06em; }
+
+    .fade-in { opacity: 0; transform: translateY(22px); transition: opacity 0.85s ease, transform 0.85s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      section { padding: 5rem 1.5rem; }
+      .intro-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .intro-photo img { height: 400px; }
+      .portfolio-grid { grid-template-columns: 1fr; }
+      .easter-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <span class="nav-name">Cider</span>
+    <ul class="nav-links">
+      <li><a href="#intro">About</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#about">Introduction</a></li>
+    </ul>
+  </nav>
+
+  <section id="hero">
+    <div class="hero-bg-text">Cider</div>
+    <div class="hero-content">
+      <p class="hero-label fade-in">Content · Film · Visual</p>
+      <div class="hero-divider"></div>
+      <p class="hero-tagline fade-in fade-in-delay-1">用文字、视频与视觉讲述故事</p>
+      <p class="hero-tagline-en fade-in fade-in-delay-2">Storytelling through words, film & visuals</p>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <div class="band">
+    <section id="intro">
+      <div class="intro-grid">
+        <div class="intro-photo fade-in">
+          <img src="assets/portrait.jpg" alt="Cider 钟月渟" />
+        </div>
+        <div>
+          <p class="section-label fade-in">Hello</p>
+          <h2 class="section-title fade-in fade-in-delay-1">I'm Cider<br>钟月渟</h2>
+          <p class="intro-bio fade-in fade-in-delay-2">Content creator · Chinese social media marketer</p>
+          <p class="intro-bio-sub fade-in fade-in-delay-2">Based in Guangzhou</p>
+          <p class="intro-bio-zh fade-in fade-in-delay-2">用文字、视频与视觉讲述故事。<br>横跨品牌叙事与空间美学，正在往动态视觉延伸。</p>
+          <div class="intro-tags fade-in fade-in-delay-3">
+            <span class="tag">Brand Storytelling</span>
+            <span class="tag">Video</span>
+            <span class="tag">Copywriting</span>
+            <span class="tag">Space & Aesthetics</span>
+            <span class="tag">Motion (learning)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="band-purple">
+    <section id="portfolio">
+      <p class="section-label fade-in">Work</p>
+      <h2 class="section-title fade-in fade-in-delay-1">Portfolio</h2>
+      <div class="portfolio-grid">
+        <div class="portfolio-item fade-in">
+          <div>
+            <div class="portfolio-item-num">01</div>
+            <div class="portfolio-item-title">Video Editing</div>
+            <div class="portfolio-item-title-zh">视频剪辑</div>
+            <p class="portfolio-item-desc">品牌短视频、活动宣传片、AI创意视频<br>Brand films · Event promos · AI-generated</p>
+          </div>
+          <span class="portfolio-arrow">→</span>
+        </div>
+        <div class="portfolio-item fade-in fade-in-delay-1">
+          <div>
+            <div class="portfolio-item-num">02</div>
+            <div class="portfolio-item-title">Poster Design</div>
+            <div class="portfolio-item-title-zh">海报设计</div>
+            <p class="portfolio-item-desc">视觉传达、拼贴艺术、议题海报<br>Visual communication · Collage · Issue-based</p>
+          </div>
+          <span class="portfolio-arrow">→</span>
+        </div>
+        <div class="portfolio-item fade-in fade-in-delay-2">
+          <div>
+            <div class="portfolio-item-num">03</div>
+            <div class="portfolio-item-title">Writing</div>
+            <div class="portfolio-item-title-zh">文案写作</div>
+            <p class="portfolio-item-desc">品牌文案、策展推文、短视频脚本<br>Brand copy · Curatorial writing · Scripts</p>
+          </div>
+          <span class="portfolio-arrow">→</span>
+        </div>
+        <div class="portfolio-item fade-in fade-in-delay-3">
+          <div>
+            <div class="portfolio-item-num">04</div>
+            <div class="portfolio-item-title">Display</div>
+            <div class="portfolio-item-title-zh">展陈布置</div>
+            <p class="portfolio-item-desc">书店文创陈列、空间叙事、场景策划<br>Retail display · Spatial storytelling</p>
+          </div>
+          <span class="portfolio-arrow">→</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="band-alt">
+    <section id="experience">
+      <p class="section-label fade-in">Journey</p>
+      <h2 class="section-title fade-in fade-in-delay-1">Experience</h2>
+      <div class="timeline">
+        <div class="timeline-item fade-in">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">2025 — 2026</div>
+          <div class="timeline-role">Freelance Creator</div>
+          <div class="timeline-org">广州 · 自由职业</div>
+          <p class="timeline-desc">自由拍摄与剪辑，客户包含新的果汁、广州国际咖啡博览会、ECOFLEX。独自旅居清迈一个月，云南大理—沙溪—丽江—香格里拉—昆明一个月。</p>
+        </div>
+        <div class="timeline-item fade-in fade-in-delay-1">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">2022 — 2024</div>
+          <div class="timeline-role">Head of Content</div>
+          <div class="timeline-org">ECOFLEX 优智装 · 内容运营主管</div>
+          <p class="timeline-desc">负责品牌话语体系建设，独立完成150+篇短视频脚本，管理视频号与抖音品牌矩阵，制定B端差异化内容策略，推动汉国置业在深圳与广州的项目落地。</p>
+        </div>
+        <div class="timeline-item fade-in fade-in-delay-2">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">2021</div>
+          <div class="timeline-role">Curatorial Assistant</div>
+          <div class="timeline-org">广州设计周 · 策展助理</div>
+          <p class="timeline-desc">负责「她设计奖」及「设计中国」的文案写作，包括推文、主持稿、宣传脚本、主题论坛。协助执行千人颁奖典礼，与获奖设计师及媒体对接协调。</p>
+        </div>
+        <div class="timeline-item fade-in fade-in-delay-3">
+          <div class="timeline-dot"></div>
+          <div class="timeline-year">2020</div>
+          <div class="timeline-role">Creative Specialist</div>
+          <div class="timeline-org">1200bookshop · 文创专员</div>
+          <p class="timeline-desc">负责书店文创区域的展台设计与陈列展示。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="band-purple">
+    <section id="about">
+      <p class="section-label fade-in">Introduction</p>
+      <h2 class="section-title fade-in fade-in-delay-1">About Me</h2>
+
+      <div class="id-card fade-in fade-in-delay-1">
+        <div class="id-card-name">钟月渟</div>
+        <div class="id-card-name-en">Cider</div>
+        <div class="id-card-row"><span class="id-card-label">Location</span><span class="id-card-value">Guangzhou, China</span></div>
+        <div class="id-card-row"><span class="id-card-label">Season</span><span class="id-card-value">Autumn 🍎</span></div>
+        <div class="id-card-row"><span class="id-card-label">Makes</span><span class="id-card-value">Candles · Sewing · Baking · Ikebana · Clay</span></div>
+        <div class="id-card-row"><span class="id-card-label">Moves</span><span class="id-card-value">Hiking · Yoga · Surya Kriya</span></div>
+        <div class="id-card-row"><span class="id-card-label">Reads</span><span class="id-card-value">Diamond Sutra · Keats · Quiet things</span></div>
+      </div>
+
+      <div class="fade-in">
+        <p class="easter-label">Things I make when I'm not working</p>
+        <div class="easter-grid">
+          <div class="easter-item"><img src="assets/easter/candle1.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item"><img src="assets/easter/candle2.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item"><img src="assets/easter/clay1.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+          <div class="easter-item"><img src="assets/easter/candle3.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item"><img src="assets/easter/candle4.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item"><img src="assets/easter/clay2.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+          <div class="easter-item"><img src="assets/easter/clay3.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+        </div>
+      </div>
+
+      <div class="contact-row fade-in">
+        <div class="contact-item"><a href="mailto:1286794126@qq.com"><span class="contact-platform">Email</span>1286794126@qq.com</a></div>
+        <div class="contact-item"><a href="https://instagram.com/cider_at" target="_blank"><span class="contact-platform">Instagram</span>@cider_at</a></div>
+        <div class="contact-item"><a href="#" target="_blank"><span class="contact-platform">Rednote 小红书</span>小钟动起来</a></div>
+      </div>
+    </section>
+  </div>
+
+  <footer style="text-align:center;"><p>© 2026 Cider</p></footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
