@@ -9,11 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=Noto+Serif+SC:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-start: #E8E4F0;
-      --bg-end: #F5F0E8;
-      --lavender: #6A5E90;
-      --lavender-light: #A898C8;
-      --lavender-pale: #D8D0EC;
+      --bg-start: #E7E2F0;
+      --bg-end: #F7F2EA;
+      --lavender: #6B5F92;
+      --lavender-light: #9C8FBE;
+      --lavender-pale: #D9D1EC;
+      --apple-red: #C0432E;
       --text: #2A2440;
       --text-muted: #7A6E98;
       --border: rgba(140, 128, 180, 0.18);
@@ -37,7 +38,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.5rem 3rem;
-      background: rgba(232, 228, 240, 0.82);
+      background: rgba(230, 232, 240, 0.82);
       backdrop-filter: blur(14px);
       border-bottom: 0.5px solid var(--border);
     }
@@ -47,7 +48,11 @@
       font-size: 1.1rem;
       letter-spacing: 0.1em;
       color: var(--lavender);
+      transition: color 0.5s;
+      cursor: default;
     }
+
+    .nav-name:hover { color: var(--apple-red); }
 
     .nav-links { display: flex; gap: 2.5rem; list-style: none; }
 
@@ -71,7 +76,7 @@
       padding: 8rem 3rem 4rem;
       position: relative;
       overflow: hidden;
-      background: linear-gradient(160deg, #E8E4F0 0%, #EDE8F2 35%, #F0EBF0 60%, #F2EDE8 80%, #F5F0E8 100%);
+      background: linear-gradient(160deg, #E7E2F0 0%, #ECE7F1 35%, #F0EAEE 60%, #F3EDE8 80%, #F7F2EA 100%);
     }
 
     .hero-bg-text {
@@ -166,23 +171,17 @@
       50% { transform: translateY(-10px); }
     }
 
-    /* ── FLOATING FLOWERS ── */
-    .flower {
+    /* ── SOFT-BLOOM SHELL GRAPHICS ── */
+    .shell-bloom {
       position: absolute;
       pointer-events: none;
       z-index: 1;
       will-change: transform;
-      opacity: 0.82;
     }
 
-    .f1 { width: 110px; top: 12%; left: 6%; animation: drift1 9s ease-in-out infinite; }
-    .f2 { width: 90px;  top: 8%;  right: 10%; animation: drift2 11s ease-in-out infinite; }
-    .f3 { width: 70px;  top: 55%; left: 3%;  animation: drift3 8s ease-in-out infinite; }
-    .f4 { width: 80px;  top: 20%; left: 22%; animation: drift4 10s ease-in-out infinite; }
-    .f5 { width: 120px; top: 15%; right: 22%; animation: drift1 12s ease-in-out infinite reverse; }
-    .f6 { width: 60px;  top: 65%; right: 6%; animation: drift2 9s ease-in-out infinite reverse; }
-    .f7 { width: 95px;  top: 70%; left: 18%; animation: drift3 13s ease-in-out infinite; }
-    .f8 { width: 75px;  top: 40%; right: 3%; animation: drift4 8s ease-in-out infinite reverse; }
+    .b1 { width: 480px; top: -8%; right: -10%; animation: drift1 14s ease-in-out infinite; }
+    .b2 { width: 320px; bottom: -6%; left: -8%; animation: drift3 16s ease-in-out infinite reverse; }
+    .b3 { width: 220px; top: 32%; left: 4%; animation: drift2 12s ease-in-out infinite; opacity: 0.7; }
 
     @keyframes drift1 {
       0%, 100% { transform: translate(0, 0) rotate(0deg); }
@@ -203,14 +202,22 @@
       40%  { transform: translate(-8px, 10px) rotate(-4deg); }
       80%  { transform: translate(6px, -6px) rotate(2deg); }
     }
-    /* All sections after intro: lavender purple */
-    .band-alt { background: #EEEAF4; }
-    .band-purple { background: linear-gradient(160deg, #E8E4F0 0%, #EDE8F2 60%, #EEEAF4 100%); }
+    /* All sections after intro: soft lavender wash */
+    .band-alt { background: #EEEAF3; }
+    .band-purple { background: linear-gradient(160deg, #E9E4F1 0%, #ECE7F2 60%, #EEEAF3 100%); }
 
     section {
       padding: 7rem 3rem;
       max-width: 1100px;
       margin: 0 auto;
+      position: relative;
+    }
+
+    .deco-shell {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.55;
+      z-index: 0;
     }
 
     .section-label {
@@ -296,10 +303,10 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      background: linear-gradient(135deg, #F5F0F8, #EEE8F5);
+      background: linear-gradient(135deg, #F4F0F7, #EDE7F3);
     }
 
-    .portfolio-item:hover { background: linear-gradient(135deg, #EDE6F5, #E4DCF0); }
+    .portfolio-item:hover { background: linear-gradient(135deg, #ECE4F3, #E2D9EF); }
 
     .portfolio-item-num {
       font-family: 'Cormorant Garamond', serif;
@@ -381,6 +388,7 @@
       padding: 2.5rem;
       max-width: 420px;
       position: relative;
+      z-index: 0;
       margin-bottom: 5rem;
       background: rgba(255,255,255,0.35);
     }
@@ -389,7 +397,7 @@
       content: 'PERSONAL ID';
       position: absolute;
       top: -0.5rem; left: 1.5rem;
-      background: #E8E4F0;
+      background: #E9E4F1;
       padding: 0 0.5rem;
       font-size: 0.62rem;
       letter-spacing: 0.22em;
@@ -397,7 +405,7 @@
     }
 
     .id-card-name { font-family: 'Noto Serif SC', serif; font-size: 1.8rem; font-weight: 300; color: var(--text); margin-bottom: 0.25rem; }
-    .id-card-name-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: var(--lavender); margin-bottom: 1.5rem; }
+    .id-card-name-en { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; color: var(--apple-red); margin-bottom: 1.5rem; }
     .id-card-row { display: flex; gap: 1rem; margin-bottom: 0.6rem; font-size: 0.8rem; }
     .id-card-label { color: var(--text-muted); min-width: 80px; }
     .id-card-value { color: var(--text); }
@@ -447,6 +455,31 @@
     .contact-item a:hover { color: var(--lavender); }
     .contact-platform { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lavender-light); }
 
+    /* ── shell placements ── */
+    .deco-portfolio { width: 260px; top: -1rem; right: 0; opacity: 0.5; }
+    .deco-experience { width: 200px; top: 2rem; right: -2rem; opacity: 0.45; }
+    .id-card-shell {
+      position: absolute;
+      width: 170px;
+      right: -70px;
+      bottom: -50px;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .contact-shell {
+      width: 60px;
+      opacity: 0.85;
+      display: block;
+      margin: 0 auto 1.5rem;
+    }
+    .footer-shell {
+      width: 44px;
+      opacity: 0.65;
+      display: block;
+      margin: 0 auto 0.8rem;
+    }
+
     footer {
       border-top: 0.5px solid var(--border);
       padding: 2rem 3rem;
@@ -487,14 +520,25 @@
 
   <div id="hero">
     <!-- Floating flowers -->
-    <img class="flower f1" src="assets/flowers/flower1.png" alt="" />
-    <img class="flower f2" src="assets/flowers/flower2.png" alt="" />
-    <img class="flower f3" src="assets/flowers/flower3.png" alt="" />
-    <img class="flower f4" src="assets/flowers/flower4.png" alt="" />
-    <img class="flower f5" src="assets/flowers/flower5.png" alt="" />
-    <img class="flower f6" src="assets/flowers/flower6.png" alt="" />
-    <img class="flower f7" src="assets/flowers/flower7.png" alt="" />
-    <img class="flower f8" src="assets/flowers/flower8.png" alt="" />
+    <svg class="shell-bloom b1" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="shellGrad" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#C0432E" stop-opacity="0.32"/>
+          <stop offset="45%" stop-color="#9C8FBE" stop-opacity="0.28"/>
+          <stop offset="100%" stop-color="#E7E2F0" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="shellBlur" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="14"/>
+        </filter>
+      </defs>
+      <path filter="url(#shellBlur)" fill="url(#shellGrad)" d="M100,170 C40,170 15,120 30,70 C42,30 80,10 100,10 C120,10 158,30 170,70 C185,120 160,170 100,170 Z"/>
+    </svg>
+    <svg class="shell-bloom b2" viewBox="0 0 200 200" aria-hidden="true">
+      <path filter="url(#shellBlur)" fill="url(#shellGrad)" d="M100,170 C40,170 15,120 30,70 C42,30 80,10 100,10 C120,10 158,30 170,70 C185,120 160,170 100,170 Z"/>
+    </svg>
+    <svg class="shell-bloom b3" viewBox="0 0 200 200" aria-hidden="true">
+      <path filter="url(#shellBlur)" fill="url(#shellGrad)" d="M100,170 C40,170 15,120 30,70 C42,30 80,10 100,10 C120,10 158,30 170,70 C185,120 160,170 100,170 Z"/>
+    </svg>
 
     <!-- Venus -->
     <div class="hero-venus-wrap">
@@ -541,6 +585,7 @@
 
   <div class="band-purple">
     <section id="portfolio">
+      <img class="deco-shell deco-portfolio" src="assets/shells/shell-spider.png" alt="" aria-hidden="true"/>
       <p class="section-label fade-in">Work</p>
       <h2 class="section-title fade-in fade-in-delay-1">Portfolio</h2>
       <div class="portfolio-grid">
@@ -586,6 +631,7 @@
 
   <div class="band-alt">
     <section id="experience">
+      <img class="deco-shell deco-experience" src="assets/shells/shell-scallop-worn.png" alt="" aria-hidden="true"/>
       <p class="section-label fade-in">Journey</p>
       <h2 class="section-title fade-in fade-in-delay-1">Experience</h2>
       <div class="timeline">
@@ -627,6 +673,7 @@
       <h2 class="section-title fade-in fade-in-delay-1">About Me</h2>
 
       <div class="id-card fade-in fade-in-delay-1">
+        <img class="id-card-shell" src="assets/shells/shell-spiral.png" alt="" aria-hidden="true"/>
         <div class="id-card-name">钟月渟</div>
         <div class="id-card-name-en">Cider</div>
         <div class="id-card-row"><span class="id-card-label">Location</span><span class="id-card-value">Guangzhou, China</span></div>
@@ -649,6 +696,7 @@
         </div>
       </div>
 
+      <img class="contact-shell fade-in" src="assets/shells/shell-murex.png" alt="" aria-hidden="true"/>
       <div class="contact-row fade-in">
         <div class="contact-item"><a href="mailto:1286794126@qq.com"><span class="contact-platform">Email</span>1286794126@qq.com</a></div>
         <div class="contact-item"><a href="https://instagram.com/cider_at" target="_blank"><span class="contact-platform">Instagram</span>@cider_at</a></div>
@@ -657,7 +705,10 @@
     </section>
   </div>
 
-  <footer><p>© 2026 Cider</p></footer>
+  <footer>
+    <img class="footer-shell" src="assets/shells/shell-scallop-clean.png" alt="" aria-hidden="true"/>
+    <p>© 2026 Cider</p>
+  </footer>
 
   <script>
     const observer = new IntersectionObserver((entries) => {
@@ -666,7 +717,7 @@
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
     // Mouse parallax for flowers
-    const flowers = document.querySelectorAll('.flower');
+    const flowers = document.querySelectorAll('.shell-bloom');
     const venus = document.querySelector('.hero-venus-wrap');
     const depths = [0.03, 0.05, 0.04, 0.06, 0.04, 0.05, 0.03, 0.06];
 
