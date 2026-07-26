@@ -138,7 +138,6 @@
     @media (max-width: 720px) {
       .hero-flanking { flex-direction: column; min-height: 0; gap: 0.75rem; }
       .hero-tagline, .hero-tagline-en { text-align: center; }
-      .hero-flower-wrap { width: 78vw; }
     }
 
     .scroll-hint {
@@ -208,24 +207,23 @@
     .g4 { width: clamp(380px, 36vw, 560px); bottom: 0%; left: 6%; animation: drift3 32s ease-in-out infinite reverse; }
     .g5 { width: clamp(400px, 38vw, 580px); bottom: -10%; right: -5%; animation: drift2 28s ease-in-out infinite; }
 
-    /* ── HERO FLOWER VIDEO ── */
+    /* ── HERO FLOWER VIDEO (real per-pixel alpha matte via canvas) ── */
     .hero-flower-wrap {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 680px;
-      max-width: 88vw;
+      width: min(78vw, 980px);
       z-index: 1;
       pointer-events: none;
-      mix-blend-mode: screen;
     }
 
-    .hero-flower {
+    .hero-flower-wrap video { display: none; }
+
+    #heroFlowerCanvas {
       width: 100%;
+      height: auto;
       display: block;
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 92%);
-      mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 92%);
     }
 
     @keyframes drift1 {
@@ -607,15 +605,14 @@
 
     <!-- Venus removed -->
     <div class="hero-flower-wrap">
-      <video class="hero-flower" autoplay muted loop playsinline poster="assets/hero-flower-poster.jpg">
+      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline poster="assets/hero-flower-poster.jpg" crossorigin="anonymous">
         <source src="assets/hero-flower.mp4" type="video/mp4">
       </video>
+      <canvas id="heroFlowerCanvas"></canvas>
     </div>
 
     <!-- Text -->
     <div class="hero-content">
-      <p class="hero-label fade-in">Content · Film · Visual</p>
-      <div class="hero-divider"></div>
       <div class="hero-flanking">
         <p class="hero-tagline fade-in fade-in-delay-1">用文字、视频与视觉讲述故事</p>
         <p class="hero-tagline-en fade-in fade-in-delay-2">Storytelling through words, film & visuals</p>
@@ -780,6 +777,45 @@
   </footer>
 
   <script>
+    // Real per-pixel alpha matte for the hero flower video (black background -> true transparency,
+    // colors preserved instead of washed out by CSS blend modes)
+    (function initHeroFlowerMatte() {
+      const video = document.getElementById('heroFlowerVideo');
+      const canvas = document.getElementById('heroFlowerCanvas');
+      if (!video || !canvas) return;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      let sized = false;
+
+      function resize() {
+        if (!video.videoWidth) return;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        sized = true;
+      }
+      video.addEventListener('loadedmetadata', resize);
+
+      function draw() {
+        if (sized && video.readyState >= 2) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const d = frame.data;
+          for (let i = 0; i < d.length; i += 4) {
+            const r = d[i], g = d[i + 1], b = d[i + 2];
+            const a = Math.max(r, g, b); // brightness becomes alpha
+            d[i + 3] = a;
+            if (a > 8) {
+              d[i]     = Math.min(255, (r * 255) / a);
+              d[i + 1] = Math.min(255, (g * 255) / a);
+              d[i + 2] = Math.min(255, (b * 255) / a);
+            }
+          }
+          ctx.putImageData(frame, 0, 0);
+        }
+        requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+    })();
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
