@@ -92,7 +92,7 @@
       pointer-events: none;
     }
 
-    .hero-content { text-align: center; position: relative; }
+    .hero-content { text-align: center; position: relative; z-index: 2; }
 
     .hero-label {
       font-size: 0.72rem;
@@ -108,18 +108,37 @@
       margin: 0 auto 2rem;
     }
 
+    .hero-flanking {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: min(1160px, 94vw);
+      margin: 0 auto;
+      min-height: 340px;
+      gap: 1.5rem;
+    }
+
     .hero-tagline {
+      flex: 1;
       font-size: 1.05rem;
       color: var(--text);
       line-height: 1.9;
       letter-spacing: 0.04em;
+      text-align: right;
     }
 
     .hero-tagline-en {
+      flex: 1;
       font-size: 0.8rem;
       color: var(--text-muted);
       letter-spacing: 0.08em;
-      margin-top: 0.5rem;
+      text-align: left;
+    }
+
+    @media (max-width: 720px) {
+      .hero-flanking { flex-direction: column; min-height: 0; gap: 0.75rem; }
+      .hero-tagline, .hero-tagline-en { text-align: center; }
+      .hero-flower-wrap { width: 78vw; }
     }
 
     .scroll-hint {
@@ -192,21 +211,21 @@
     /* ── HERO FLOWER VIDEO ── */
     .hero-flower-wrap {
       position: absolute;
-      bottom: -4%;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      width: 620px;
-      max-width: 82vw;
-      z-index: 2;
+      transform: translate(-50%, -50%);
+      width: 680px;
+      max-width: 88vw;
+      z-index: 1;
       pointer-events: none;
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 92%);
-      mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 92%);
+      mix-blend-mode: screen;
     }
 
     .hero-flower {
       width: 100%;
       display: block;
-      mix-blend-mode: screen;
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 92%);
+      mask-image: radial-gradient(circle at 50% 50%, black 60%, transparent 92%);
     }
 
     @keyframes drift1 {
@@ -597,8 +616,10 @@
     <div class="hero-content">
       <p class="hero-label fade-in">Content · Film · Visual</p>
       <div class="hero-divider"></div>
-      <p class="hero-tagline fade-in fade-in-delay-1">用文字、视频与视觉讲述故事</p>
-      <p class="hero-tagline-en fade-in fade-in-delay-2">Storytelling through words, film & visuals</p>
+      <div class="hero-flanking">
+        <p class="hero-tagline fade-in fade-in-delay-1">用文字、视频与视觉讲述故事</p>
+        <p class="hero-tagline-en fade-in fade-in-delay-2">Storytelling through words, film & visuals</p>
+      </div>
     </div>
 
     <div class="scroll-hint">
