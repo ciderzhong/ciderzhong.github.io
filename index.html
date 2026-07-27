@@ -218,7 +218,13 @@
       pointer-events: none;
     }
 
-    .hero-flower-wrap video { display: none; }
+    .hero-flower-wrap video {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      opacity: 0;
+      pointer-events: none;
+    }
 
     #heroFlowerCanvas {
       width: 100%;
@@ -605,18 +611,15 @@
 
     <!-- Venus removed -->
     <div class="hero-flower-wrap">
-      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline poster="assets/hero-flower-poster.jpg" crossorigin="anonymous">
+      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline poster="assets/hero-flower-poster.jpg">
         <source src="assets/hero-flower.mp4" type="video/mp4">
       </video>
       <canvas id="heroFlowerCanvas"></canvas>
     </div>
 
-    <!-- Text -->
+    <!-- Text temporarily removed while tuning the flower video -->
     <div class="hero-content">
-      <div class="hero-flanking">
-        <p class="hero-tagline fade-in fade-in-delay-1">用文字、视频与视觉讲述故事</p>
-        <p class="hero-tagline-en fade-in fade-in-delay-2">Storytelling through words, film & visuals</p>
-      </div>
+      <div class="hero-flanking"></div>
     </div>
 
     <div class="scroll-hint">
@@ -795,21 +798,32 @@
       video.addEventListener('loadedmetadata', resize);
 
       function draw() {
-        if (sized && video.readyState >= 2) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const d = frame.data;
-          for (let i = 0; i < d.length; i += 4) {
-            const r = d[i], g = d[i + 1], b = d[i + 2];
-            const a = Math.max(r, g, b); // brightness becomes alpha
-            d[i + 3] = a;
-            if (a > 8) {
-              d[i]     = Math.min(255, (r * 255) / a);
-              d[i + 1] = Math.min(255, (g * 255) / a);
-              d[i + 2] = Math.min(255, (b * 255) / a);
+        try {
+          if (sized && video.readyState >= 2) {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const d = frame.data;
+            const T_LOW = 10;   // below this: fully transparent (true background black)
+            const T_HIGH = 34;  // above this: fully opaque, original color untouched
+            const LIFT = 0.14;  // gentle shadow lift so mid-dark greens don't read as too heavy
+            for (let i = 0; i < d.length; i += 4) {
+              const r = d[i], g = d[i + 1], b = d[i + 2];
+              const lum = Math.max(r, g, b);
+              let alpha;
+              if (lum <= T_LOW) alpha = 0;
+              else if (lum >= T_HIGH) alpha = 255;
+              else alpha = Math.round((lum - T_LOW) / (T_HIGH - T_LOW) * 255);
+              d[i + 3] = alpha;
+              if (alpha > 0) {
+                d[i]     = r + (255 - r) * LIFT;
+                d[i + 1] = g + (255 - g) * LIFT;
+                d[i + 2] = b + (255 - b) * LIFT;
+              }
             }
+            ctx.putImageData(frame, 0, 0);
           }
-          ctx.putImageData(frame, 0, 0);
+        } catch (err) {
+          // Never let a draw error kill the loop
         }
         requestAnimationFrame(draw);
       }
