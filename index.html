@@ -142,6 +142,7 @@
 
     .scroll-hint {
       position: absolute;
+      z-index: 3;
       bottom: 3rem; left: 50%;
       transform: translateX(-50%);
       display: flex;
@@ -208,12 +209,12 @@
     .g5 { width: clamp(400px, 38vw, 580px); bottom: -10%; right: -5%; animation: drift2 28s ease-in-out infinite; }
 
     /* ── HERO FLOWER VIDEO (real per-pixel alpha matte via canvas) ── */
+    /* Full-bleed: the wrap now matches the hero's own box exactly, and the canvas
+       uses object-fit:cover to scale/crop the flower so it fills the entire hero,
+       bottom edge flush with the hero's bottom edge — no floating rectangle. */
     .hero-flower-wrap {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: min(78vw, 980px);
+      inset: 0;
       z-index: 1;
       pointer-events: none;
     }
@@ -228,7 +229,9 @@
 
     #heroFlowerCanvas {
       width: 100%;
-      height: auto;
+      height: 100%;
+      object-fit: cover;
+      object-position: center bottom;
       display: block;
     }
 
@@ -788,36 +791,89 @@
       if (!video || !canvas) return;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       let sized = false;
+      // Auto-sampled background, modeled as a bilinear blend of the 4 corners rather than a single
+      // flat color — the source video has a soft radial vignette (corners darker than center/edges),
+      // so a flat average left a faint grey residue along the bottom edge. Bilinear tracks that falloff.
+      let bgTL = [0, 0, 0], bgTR = [0, 0, 0], bgBL = [0, 0, 0], bgBR = [0, 0, 0];
+
+      function sampleBackground() {
+        const w = canvas.width, h = canvas.height;
+        const patch = Math.max(4, Math.round(Math.min(w, h) * 0.02));
+        ctx.drawImage(video, 0, 0, w, h);
+        function avg(x, y) {
+          const d = ctx.getImageData(x, y, patch, patch).data;
+          let r = 0, g = 0, b = 0, n = 0;
+          for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
+          return [r / n, g / n, b / n];
+        }
+        bgTL = avg(0, 0);
+        bgTR = avg(w - patch, 0);
+        bgBL = avg(0, h - patch);
+        bgBR = avg(w - patch, h - patch);
+      }
 
       function resize() {
         if (!video.videoWidth) return;
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         sized = true;
+        sampleBackground();
       }
       video.addEventListener('loadedmetadata', resize);
+      // Race-condition guard: if metadata already loaded before this listener was attached
+      // (can happen once the video is cached, or on fast page loads), the event above
+      // never fires. Check readiness immediately, and keep polling briefly as a fallback.
+      if (video.readyState >= 1 && video.videoWidth) {
+        resize();
+      } else {
+        const readyPoll = setInterval(() => {
+          if (video.videoWidth) { resize(); clearInterval(readyPoll); }
+        }, 100);
+        setTimeout(() => clearInterval(readyPoll), 5000);
+      }
+
+      // Color-distance keying against the bilinear-modeled backdrop: transparent where a pixel
+      // matches the local background estimate, opaque where it differs (the flower).
+      const NEAR = 20;   // distance below which a pixel is treated as pure background (fully transparent)
+      const FAR  = 62;   // distance above which a pixel is treated as pure foreground (fully opaque)
+      const LIFT = 0.16; // brightness lift on foreground pixels (user-selected "brighter" version)
 
       function draw() {
         try {
           if (sized && video.readyState >= 2) {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const w = canvas.width, h = canvas.height;
+            ctx.drawImage(video, 0, 0, w, h);
+            const frame = ctx.getImageData(0, 0, w, h);
             const d = frame.data;
-            const T_LOW = 10;   // below this: fully transparent (true background black)
-            const T_HIGH = 34;  // above this: fully opaque, original color untouched
-            const LIFT = 0.14;  // gentle shadow lift so mid-dark greens don't read as too heavy
-            for (let i = 0; i < d.length; i += 4) {
-              const r = d[i], g = d[i + 1], b = d[i + 2];
-              const lum = Math.max(r, g, b);
-              let alpha;
-              if (lum <= T_LOW) alpha = 0;
-              else if (lum >= T_HIGH) alpha = 255;
-              else alpha = Math.round((lum - T_LOW) / (T_HIGH - T_LOW) * 255);
-              d[i + 3] = alpha;
-              if (alpha > 0) {
-                d[i]     = r + (255 - r) * LIFT;
-                d[i + 1] = g + (255 - g) * LIFT;
-                d[i + 2] = b + (255 - b) * LIFT;
+            const span = FAR - NEAR;
+            const wm1 = Math.max(1, w - 1), hm1 = Math.max(1, h - 1);
+            for (let y = 0; y < h; y++) {
+              const fy = y / hm1;
+              for (let x = 0; x < w; x++) {
+                const fx = x / wm1;
+                const i = (y * w + x) * 4;
+                const topR = bgTL[0] + (bgTR[0] - bgTL[0]) * fx;
+                const topG = bgTL[1] + (bgTR[1] - bgTL[1]) * fx;
+                const topB = bgTL[2] + (bgTR[2] - bgTL[2]) * fx;
+                const botR = bgBL[0] + (bgBR[0] - bgBL[0]) * fx;
+                const botG = bgBL[1] + (bgBR[1] - bgBL[1]) * fx;
+                const botB = bgBL[2] + (bgBR[2] - bgBL[2]) * fx;
+                const bgR = topR + (botR - topR) * fy;
+                const bgG = topG + (botG - topG) * fy;
+                const bgB = topB + (botB - topB) * fy;
+
+                const r = d[i], g = d[i + 1], b = d[i + 2];
+                const dr = r - bgR, dg = g - bgG, db = b - bgB;
+                const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+                let t = (dist - NEAR) / span;
+                if (t < 0) t = 0; else if (t > 1) t = 1;
+                const alpha = t * t * (3 - 2 * t); // smoothstep for a softer edge than a hard linear ramp
+                d[i + 3] = Math.round(alpha * 255);
+                if (alpha > 0.02) {
+                  d[i]     = r + (255 - r) * LIFT * alpha;
+                  d[i + 1] = g + (255 - g) * LIFT * alpha;
+                  d[i + 2] = b + (255 - b) * LIFT * alpha;
+                }
               }
             }
             ctx.putImageData(frame, 0, 0);
