@@ -817,20 +817,34 @@
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         sized = true;
-        sampleBackground();
       }
+
+      let sampled = false;
+      function trySample() {
+        // Only sample once an actual decoded frame is available (readyState >= 2 / HAVE_CURRENT_DATA).
+        // Sampling too early (right at loadedmetadata) can grab a blank/black frame before any real
+        // pixels exist, which corrupts the background color and makes the whole frame read as opaque.
+        if (!sized || video.readyState < 2) return false;
+        sampleBackground();
+        sampled = true;
+        return true;
+      }
+
       video.addEventListener('loadedmetadata', resize);
-      // Race-condition guard: if metadata already loaded before this listener was attached
-      // (can happen once the video is cached, or on fast page loads), the event above
-      // never fires. Check readiness immediately, and keep polling briefly as a fallback.
-      if (video.readyState >= 1 && video.videoWidth) {
-        resize();
-      } else {
+      video.addEventListener('loadeddata', () => { resize(); trySample(); });
+      video.addEventListener('canplay', () => { resize(); trySample(); });
+
+      if (video.videoWidth) resize();
+      if (!trySample()) {
         const readyPoll = setInterval(() => {
-          if (video.videoWidth) { resize(); clearInterval(readyPoll); }
-        }, 100);
+          resize();
+          if (trySample()) clearInterval(readyPoll);
+        }, 80);
         setTimeout(() => clearInterval(readyPoll), 5000);
       }
+      // Re-sample once more shortly after playback starts, as a safety net in case the very
+      // first available frame was still atypical (e.g. a transitional/black frame).
+      setTimeout(() => { if (sized) sampleBackground(); }, 500);
 
       // Color-distance keying against the bilinear-modeled backdrop: transparent where a pixel
       // matches the local background estimate, opaque where it differs (the flower).
