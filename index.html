@@ -233,6 +233,11 @@
       object-fit: cover;
       object-position: center bottom;
       display: block;
+      /* Slightly smaller than a full edge-to-edge cover, anchored to the bottom so it
+         still stays flush with the hero's bottom edge while pulling in a touch from
+         the sides/top. Tweak this number to taste. */
+      transform: scale(0.94);
+      transform-origin: center bottom;
     }
 
     @keyframes drift1 {
@@ -615,7 +620,7 @@
     <!-- Venus removed -->
     <div class="hero-flower-wrap">
       <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline poster="assets/hero-flower-poster.jpg">
-        <source src="assets/hero-flower.mp4" type="video/mp4">
+        <source src="assets/hero-flower-wind.mp4" type="video/mp4">
       </video>
       <canvas id="heroFlowerCanvas"></canvas>
     </div>
@@ -796,10 +801,33 @@
       // so a flat average left a faint grey residue along the bottom edge. Bilinear tracks that falloff.
       let bgTL = [0, 0, 0], bgTR = [0, 0, 0], bgBL = [0, 0, 0], bgBR = [0, 0, 0];
 
-      function sampleBackground() {
-        const w = canvas.width, h = canvas.height;
+      function resize() {
+        if (!video.videoWidth) return;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        sized = true;
+      }
+
+      video.addEventListener('loadedmetadata', resize);
+      video.addEventListener('loadeddata', resize);
+      video.addEventListener('canplay', resize);
+      if (video.videoWidth) resize();
+      if (!sized) {
+        const readyPoll = setInterval(() => {
+          resize();
+          if (sized) clearInterval(readyPoll);
+        }, 80);
+        setTimeout(() => clearInterval(readyPoll), 5000);
+      }
+
+      // Sample the 4 corner patches straight out of the frame that was just drawn to the canvas
+      // (no extra drawImage call needed — draw() below already put the current frame there).
+      // Re-sampling continuously, rather than once up front, matters because the newer footage
+      // has a visible exposure/lighting shift partway through the clip (a cut between the bloom
+      // and wind-sway segments) — a single upfront sample goes stale and leaves a grey haze once
+      // the lighting changes. Sampling every few frames keeps the background estimate current.
+      function sampleBackgroundFromCanvas(w, h) {
         const patch = Math.max(4, Math.round(Math.min(w, h) * 0.02));
-        ctx.drawImage(video, 0, 0, w, h);
         function avg(x, y) {
           const d = ctx.getImageData(x, y, patch, patch).data;
           let r = 0, g = 0, b = 0, n = 0;
@@ -812,51 +840,21 @@
         bgBR = avg(w - patch, h - patch);
       }
 
-      function resize() {
-        if (!video.videoWidth) return;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        sized = true;
-      }
-
-      let sampled = false;
-      function trySample() {
-        // Only sample once an actual decoded frame is available (readyState >= 2 / HAVE_CURRENT_DATA).
-        // Sampling too early (right at loadedmetadata) can grab a blank/black frame before any real
-        // pixels exist, which corrupts the background color and makes the whole frame read as opaque.
-        if (!sized || video.readyState < 2) return false;
-        sampleBackground();
-        sampled = true;
-        return true;
-      }
-
-      video.addEventListener('loadedmetadata', resize);
-      video.addEventListener('loadeddata', () => { resize(); trySample(); });
-      video.addEventListener('canplay', () => { resize(); trySample(); });
-
-      if (video.videoWidth) resize();
-      if (!trySample()) {
-        const readyPoll = setInterval(() => {
-          resize();
-          if (trySample()) clearInterval(readyPoll);
-        }, 80);
-        setTimeout(() => clearInterval(readyPoll), 5000);
-      }
-      // Re-sample once more shortly after playback starts, as a safety net in case the very
-      // first available frame was still atypical (e.g. a transitional/black frame).
-      setTimeout(() => { if (sized) sampleBackground(); }, 500);
-
       // Color-distance keying against the bilinear-modeled backdrop: transparent where a pixel
       // matches the local background estimate, opaque where it differs (the flower).
       const NEAR = 20;   // distance below which a pixel is treated as pure background (fully transparent)
       const FAR  = 62;   // distance above which a pixel is treated as pure foreground (fully opaque)
       const LIFT = 0.16; // brightness lift on foreground pixels (user-selected "brighter" version)
+      const RESAMPLE_EVERY = 6; // frames between background re-samples (~10x/sec at 60fps)
+      let frameCount = 0;
 
       function draw() {
         try {
           if (sized && video.readyState >= 2) {
             const w = canvas.width, h = canvas.height;
             ctx.drawImage(video, 0, 0, w, h);
+            if (frameCount % RESAMPLE_EVERY === 0) sampleBackgroundFromCanvas(w, h);
+            frameCount++;
             const frame = ctx.getImageData(0, 0, w, h);
             const d = frame.data;
             const span = FAR - NEAR;
