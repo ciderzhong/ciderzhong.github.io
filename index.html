@@ -406,6 +406,185 @@
 
     .portfolio-item:hover .portfolio-arrow { opacity: 1; transform: translateX(0); }
 
+    /* ── PORTFOLIO EXPAND MODAL ── */
+    .portfolio-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(42, 36, 64, 0.55);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 5rem 1.5rem 3rem;
+      overflow-y: auto;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+
+    .portfolio-modal.open { opacity: 1; pointer-events: auto; }
+
+    .portfolio-modal-inner {
+      background: linear-gradient(160deg, #F7F2EA 0%, #F0EAEE 60%, #ECE7F1 100%);
+      border-radius: 18px;
+      max-width: 1000px;
+      width: 100%;
+      padding: 3rem 2.5rem;
+      position: relative;
+      box-shadow: 0 30px 80px rgba(42, 36, 64, 0.35);
+      transform: translateY(16px);
+      transition: transform 0.35s ease;
+    }
+
+    .portfolio-modal.open .portfolio-modal-inner { transform: translateY(0); }
+
+    .portfolio-modal-close {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      background: rgba(255,255,255,0.6);
+      color: var(--lavender);
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .portfolio-modal-close:hover { background: var(--lavender); color: #fff; }
+
+    .portfolio-modal-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lavender-light);
+      margin-bottom: 0.6rem;
+    }
+
+    .portfolio-modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.1rem;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 2rem;
+    }
+
+    .portfolio-modal-title span {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-left: 0.75rem;
+    }
+
+    .video-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .video-card {
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background: #E7E2F0;
+      aspect-ratio: 4 / 5;
+    }
+
+    .video-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .video-card:hover img { transform: scale(1.05); }
+
+    .video-card-play {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      color: var(--lavender);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.05rem;
+      padding-left: 3px;
+      box-shadow: 0 6px 18px rgba(42,36,64,0.25);
+      transition: background 0.25s, transform 0.25s;
+    }
+
+    .video-card:hover .video-card-play { background: var(--lavender); color: #fff; transform: translate(-50%, -50%) scale(1.08); }
+
+    .video-card-info {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.9rem 0.85rem 0.75rem;
+      background: linear-gradient(to top, rgba(30,25,48,0.72), transparent);
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .video-card-title {
+      font-size: 0.76rem;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .video-card-meta {
+      font-size: 0.66rem;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .video-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(20, 16, 32, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .video-lightbox.open { opacity: 1; pointer-events: auto; }
+
+    .video-lightbox video {
+      max-width: min(92vw, 720px);
+      max-height: 86vh;
+      border-radius: 10px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+    }
+
+    .video-lightbox-close {
+      position: absolute;
+      top: 1.75rem; right: 1.75rem;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 0.5px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s;
+    }
+
+    .video-lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+    @media (max-width: 600px) {
+      .portfolio-modal-inner { padding: 2.25rem 1.25rem; }
+      .video-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.85rem; }
+    }
+
     #experience { border-top: 0.5px solid var(--border); }
 
     .timeline { position: relative; padding-left: 2.5rem; }
@@ -665,7 +844,7 @@
       <p class="section-label fade-in">Work</p>
       <h2 class="section-title fade-in fade-in-delay-1">Portfolio</h2>
       <div class="portfolio-grid">
-        <div class="portfolio-item fade-in">
+        <div class="portfolio-item fade-in" onclick="openPortfolioModal('videoModal')">
           <div>
             <div class="portfolio-item-num">01</div>
             <div class="portfolio-item-title">Video Editing</div>
@@ -784,6 +963,39 @@
     <p>© 2026 Cider</p>
   </footer>
 
+  <!-- Video Editing portfolio expand modal -->
+  <div class="portfolio-modal" id="videoModal">
+    <div class="portfolio-modal-inner">
+      <button class="portfolio-modal-close" onclick="closePortfolioModal('videoModal')" aria-label="Close">✕</button>
+      <p class="portfolio-modal-label">Work · Video Editing</p>
+      <h3 class="portfolio-modal-title">Video Editing <span>视频剪辑</span></h3>
+      <div class="video-gallery-grid">
+        <div class="video-card" data-video="assets/videos/bay-area-coffee-festival.mp4" style="aspect-ratio: 16 / 9;">
+          <img src="assets/video-posters/bay-area-coffee-festival.jpg" alt="湾区拉阔咖啡节 预热视频" />
+          <div class="video-card-play">▶</div>
+          <div class="video-card-info">
+            <span class="video-card-title">湾区拉阔咖啡节 · 预热视频</span>
+            <span class="video-card-meta">0:31</span>
+          </div>
+        </div>
+        <div class="video-card" data-video="assets/videos/happy-new-year-ai.mp4">
+          <img src="assets/video-posters/happy-new-year-ai.jpg" alt="Happy New Year AI" />
+          <div class="video-card-play">▶</div>
+          <div class="video-card-info">
+            <span class="video-card-title">Happy New Year（AI创意视频）</span>
+            <span class="video-card-meta">0:27</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="video-lightbox" id="videoLightbox">
+    <button class="video-lightbox-close" onclick="closeVideoLightbox()" aria-label="Close">✕</button>
+    <video id="videoLightboxPlayer" controls playsinline></video>
+  </div>
+
+
   <script>
     // Real per-pixel alpha matte for the hero flower video (black background -> true transparency,
     // colors preserved instead of washed out by CSS blend modes)
@@ -793,6 +1005,10 @@
       if (!video || !canvas) return;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       let sized = false;
+      // Auto-sampled background, modeled as a bilinear blend of the 4 corners rather than a single
+      // flat color — the source video has a soft radial vignette (corners darker than center/edges),
+      // so a flat average left a faint grey residue along the bottom edge. Bilinear tracks that falloff.
+      let bgTL = [0, 0, 0], bgTR = [0, 0, 0], bgBL = [0, 0, 0], bgBR = [0, 0, 0];
 
       function resize() {
         if (!video.videoWidth) return;
@@ -815,7 +1031,11 @@
 
       // Sample the 4 corner patches straight out of the frame that was just drawn to the canvas
       // (no extra drawImage call needed — draw() below already put the current frame there).
-      function sampleCornersFromCanvas(w, h) {
+      // Re-sampling continuously, rather than once up front, matters because the newer footage
+      // has a visible exposure/lighting shift partway through the clip (a cut between the bloom
+      // and wind-sway segments) — a single upfront sample goes stale and leaves a grey haze once
+      // the lighting changes. Sampling every few frames keeps the background estimate current.
+      function sampleBackgroundFromCanvas(w, h) {
         const patch = Math.max(4, Math.round(Math.min(w, h) * 0.02));
         function avg(x, y) {
           const d = ctx.getImageData(x, y, patch, patch).data;
@@ -823,39 +1043,27 @@
           for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
           return [r / n, g / n, b / n];
         }
-        return { TL: avg(0, 0), TR: avg(w - patch, 0), BL: avg(0, h - patch), BR: avg(w - patch, h - patch) };
-      }
-
-      // Background estimate is tracked with exponential smoothing rather than a hard replace.
-      // A hard per-frame replace reacts instantly to the real lighting cut between clips (good),
-      // but it also means a single frame where the flower sways into a corner patch — the corner
-      // briefly sampling petal color instead of background — gets treated as the new background and
-      // makes the whole flower vanish for that frame. Smoothing damps that single-frame contamination
-      // while still converging to a real lighting change within a handful of frames.
-      const BG_SMOOTH = 0.25; // higher = faster reaction, lower = more resistant to single-frame outliers
-      let bgTL = null, bgTR = null, bgBL = null, bgBR = null;
-      function lerp3(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
-      function updateBackground(w, h) {
-        const c = sampleCornersFromCanvas(w, h);
-        if (!bgTL) { bgTL = c.TL; bgTR = c.TR; bgBL = c.BL; bgBR = c.BR; return; }
-        bgTL = lerp3(bgTL, c.TL, BG_SMOOTH);
-        bgTR = lerp3(bgTR, c.TR, BG_SMOOTH);
-        bgBL = lerp3(bgBL, c.BL, BG_SMOOTH);
-        bgBR = lerp3(bgBR, c.BR, BG_SMOOTH);
+        bgTL = avg(0, 0);
+        bgTR = avg(w - patch, 0);
+        bgBL = avg(0, h - patch);
+        bgBR = avg(w - patch, h - patch);
       }
 
       // Color-distance keying against the bilinear-modeled backdrop: transparent where a pixel
       // matches the local background estimate, opaque where it differs (the flower).
-      const NEAR = 17;   // distance below which a pixel is treated as pure background (fully transparent)
-      const FAR  = 52;   // distance above which a pixel is treated as pure foreground (fully opaque)
+      const NEAR = 20;   // distance below which a pixel is treated as pure background (fully transparent)
+      const FAR  = 62;   // distance above which a pixel is treated as pure foreground (fully opaque)
       const LIFT = 0.16; // brightness lift on foreground pixels (user-selected "brighter" version)
+      const RESAMPLE_EVERY = 6; // frames between background re-samples (~10x/sec at 60fps)
+      let frameCount = 0;
 
       function draw() {
         try {
           if (sized && video.readyState >= 2) {
             const w = canvas.width, h = canvas.height;
             ctx.drawImage(video, 0, 0, w, h);
-            updateBackground(w, h);
+            if (frameCount % RESAMPLE_EVERY === 0) sampleBackgroundFromCanvas(w, h);
+            frameCount++;
             const frame = ctx.getImageData(0, 0, w, h);
             const d = frame.data;
             const span = FAR - NEAR;
@@ -903,6 +1111,50 @@
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Portfolio expand modal (click a category card -> gallery of that category's work)
+    function openPortfolioModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePortfolioModal(id) {
+      const modal = document.getElementById(id);
+      if (!modal) return;
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    document.querySelectorAll('.portfolio-modal').forEach(modal => {
+      modal.addEventListener('click', (e) => { if (e.target === modal) closePortfolioModal(modal.id); });
+    });
+
+    // Video lightbox playback
+    const videoLightbox = document.getElementById('videoLightbox');
+    const videoLightboxPlayer = document.getElementById('videoLightboxPlayer');
+    document.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const src = card.getAttribute('data-video');
+        if (!src || !videoLightboxPlayer) return;
+        videoLightboxPlayer.src = src;
+        videoLightbox.classList.add('open');
+        videoLightboxPlayer.play().catch(() => {});
+      });
+    });
+    function closeVideoLightbox() {
+      if (!videoLightboxPlayer) return;
+      videoLightboxPlayer.pause();
+      videoLightboxPlayer.src = '';
+      videoLightbox.classList.remove('open');
+    }
+    if (videoLightbox) {
+      videoLightbox.addEventListener('click', (e) => { if (e.target === videoLightbox) closeVideoLightbox(); });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      document.querySelectorAll('.portfolio-modal.open').forEach(m => closePortfolioModal(m.id));
+      closeVideoLightbox();
+    });
 
     // Mouse parallax for flowers
     const flowers = document.querySelectorAll('.shell-glow');
