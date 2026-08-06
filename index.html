@@ -647,13 +647,12 @@
           <h2 class="section-title fade-in fade-in-delay-1">I'm Cider<br>钟月渟</h2>
           <p class="intro-bio fade-in fade-in-delay-2">Content creator · Chinese social media marketer</p>
           <p class="intro-bio-sub fade-in fade-in-delay-2">Based in Guangzhou</p>
-          <p class="intro-bio-zh fade-in fade-in-delay-2">用文字、视频与视觉讲述故事。<br>横跨品牌叙事与空间美学，正在往动态视觉延伸。</p>
+          <p class="intro-bio-zh fade-in fade-in-delay-2">用文字、视频与视觉讲述故事。<br>横跨品牌叙事与空间美学。</p>
           <div class="intro-tags fade-in fade-in-delay-3">
             <span class="tag">Brand Storytelling</span>
-            <span class="tag">Video</span>
+            <span class="tag">Video Editing</span>
             <span class="tag">Copywriting</span>
             <span class="tag">Space & Aesthetics</span>
-            <span class="tag">Motion (learning)</span>
           </div>
         </div>
       </div>
@@ -687,9 +686,9 @@
         <div class="portfolio-item fade-in fade-in-delay-2">
           <div>
             <div class="portfolio-item-num">03</div>
-            <div class="portfolio-item-title">Writing</div>
-            <div class="portfolio-item-title-zh">文案写作</div>
-            <p class="portfolio-item-desc">品牌文案、策展推文、短视频脚本<br>Brand copy · Curatorial writing · Scripts</p>
+            <div class="portfolio-item-title">Social Media Content</div>
+            <div class="portfolio-item-title-zh">社媒内容运营</div>
+            <p class="portfolio-item-desc">品牌文案、小红书爆文、短视频脚本<br>Brand copy · Rednote highlights · Scripts</p>
           </div>
           <span class="portfolio-arrow">→</span>
         </div>
@@ -717,7 +716,7 @@
           <div class="timeline-year">2025 — 2026</div>
           <div class="timeline-role">Freelance Creator</div>
           <div class="timeline-org">广州 · 自由职业</div>
-          <p class="timeline-desc">自由拍摄与剪辑，客户包含新的果汁、广州国际咖啡博览会、ECOFLEX。独自旅居清迈一个月，云南大理—沙溪—丽江—香格里拉—昆明一个月。</p>
+          <p class="timeline-desc">自由策划与剪辑，客户包含新的果汁、广州国际咖啡博览会、ECOFLEX。旅居清迈、云南，游历越南全境。</p>
         </div>
         <div class="timeline-item fade-in fade-in-delay-1">
           <div class="timeline-dot"></div>
@@ -753,11 +752,9 @@
         <img class="id-card-shell" src="assets/shells/shell-spiral.png" alt="" aria-hidden="true"/>
         <div class="id-card-name">钟月渟</div>
         <div class="id-card-name-en">Cider</div>
-        <div class="id-card-row"><span class="id-card-label">Location</span><span class="id-card-value">Guangzhou, China</span></div>
-        <div class="id-card-row"><span class="id-card-label">Season</span><span class="id-card-value">Autumn 🍎</span></div>
-        <div class="id-card-row"><span class="id-card-label">Makes</span><span class="id-card-value">Candles · Sewing · Baking · Ikebana · Clay</span></div>
-        <div class="id-card-row"><span class="id-card-label">Moves</span><span class="id-card-value">Hiking · Yoga · Surya Kriya</span></div>
-        <div class="id-card-row"><span class="id-card-label">Reads</span><span class="id-card-value">Diamond Sutra · Keats · Quiet things</span></div>
+        <div class="id-card-row"><span class="id-card-label">Location</span><span class="id-card-value">广州，中国</span></div>
+        <div class="id-card-row"><span class="id-card-label">Makes</span><span class="id-card-value">蜡烛制作 · 缝纫 · 烘焙 · 花道 · 陶艺</span></div>
+        <div class="id-card-row"><span class="id-card-label">Moves</span><span class="id-card-value">徒步 · 瑜伽</span></div>
       </div>
 
       <div class="fade-in">
@@ -842,10 +839,13 @@
 
       // Color-distance keying against the bilinear-modeled backdrop: transparent where a pixel
       // matches the local background estimate, opaque where it differs (the flower).
-      const NEAR = 20;   // distance below which a pixel is treated as pure background (fully transparent)
-      const FAR  = 62;   // distance above which a pixel is treated as pure foreground (fully opaque)
+      const NEAR = 13;   // distance below which a pixel is treated as pure background (fully transparent)
+      const FAR  = 44;   // distance above which a pixel is treated as pure foreground (fully opaque)
       const LIFT = 0.16; // brightness lift on foreground pixels (user-selected "brighter" version)
-      const RESAMPLE_EVERY = 6; // frames between background re-samples (~10x/sec at 60fps)
+      // Re-sampling every single frame (not just every few) so the background estimate tracks the
+      // hard cut between the bloom and wind-sway segments immediately, instead of lagging a few
+      // frames behind and showing a stale grey backdrop right after the cut.
+      const RESAMPLE_EVERY = 1;
       let frameCount = 0;
 
       function draw() {
