@@ -793,10 +793,6 @@
       if (!video || !canvas) return;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       let sized = false;
-      // Auto-sampled background, modeled as a bilinear blend of the 4 corners rather than a single
-      // flat color — the source video has a soft radial vignette (corners darker than center/edges),
-      // so a flat average left a faint grey residue along the bottom edge. Bilinear tracks that falloff.
-      let bgTL = [0, 0, 0], bgTR = [0, 0, 0], bgBL = [0, 0, 0], bgBR = [0, 0, 0];
 
       function resize() {
         if (!video.videoWidth) return;
@@ -819,11 +815,7 @@
 
       // Sample the 4 corner patches straight out of the frame that was just drawn to the canvas
       // (no extra drawImage call needed — draw() below already put the current frame there).
-      // Re-sampling continuously, rather than once up front, matters because the newer footage
-      // has a visible exposure/lighting shift partway through the clip (a cut between the bloom
-      // and wind-sway segments) — a single upfront sample goes stale and leaves a grey haze once
-      // the lighting changes. Sampling every few frames keeps the background estimate current.
-      function sampleBackgroundFromCanvas(w, h) {
+      function sampleCornersFromCanvas(w, h) {
         const patch = Math.max(4, Math.round(Math.min(w, h) * 0.02));
         function avg(x, y) {
           const d = ctx.getImageData(x, y, patch, patch).data;
@@ -831,30 +823,39 @@
           for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; n++; }
           return [r / n, g / n, b / n];
         }
-        bgTL = avg(0, 0);
-        bgTR = avg(w - patch, 0);
-        bgBL = avg(0, h - patch);
-        bgBR = avg(w - patch, h - patch);
+        return { TL: avg(0, 0), TR: avg(w - patch, 0), BL: avg(0, h - patch), BR: avg(w - patch, h - patch) };
+      }
+
+      // Background estimate is tracked with exponential smoothing rather than a hard replace.
+      // A hard per-frame replace reacts instantly to the real lighting cut between clips (good),
+      // but it also means a single frame where the flower sways into a corner patch — the corner
+      // briefly sampling petal color instead of background — gets treated as the new background and
+      // makes the whole flower vanish for that frame. Smoothing damps that single-frame contamination
+      // while still converging to a real lighting change within a handful of frames.
+      const BG_SMOOTH = 0.25; // higher = faster reaction, lower = more resistant to single-frame outliers
+      let bgTL = null, bgTR = null, bgBL = null, bgBR = null;
+      function lerp3(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+      function updateBackground(w, h) {
+        const c = sampleCornersFromCanvas(w, h);
+        if (!bgTL) { bgTL = c.TL; bgTR = c.TR; bgBL = c.BL; bgBR = c.BR; return; }
+        bgTL = lerp3(bgTL, c.TL, BG_SMOOTH);
+        bgTR = lerp3(bgTR, c.TR, BG_SMOOTH);
+        bgBL = lerp3(bgBL, c.BL, BG_SMOOTH);
+        bgBR = lerp3(bgBR, c.BR, BG_SMOOTH);
       }
 
       // Color-distance keying against the bilinear-modeled backdrop: transparent where a pixel
       // matches the local background estimate, opaque where it differs (the flower).
-      const NEAR = 13;   // distance below which a pixel is treated as pure background (fully transparent)
-      const FAR  = 44;   // distance above which a pixel is treated as pure foreground (fully opaque)
+      const NEAR = 17;   // distance below which a pixel is treated as pure background (fully transparent)
+      const FAR  = 52;   // distance above which a pixel is treated as pure foreground (fully opaque)
       const LIFT = 0.16; // brightness lift on foreground pixels (user-selected "brighter" version)
-      // Re-sampling every single frame (not just every few) so the background estimate tracks the
-      // hard cut between the bloom and wind-sway segments immediately, instead of lagging a few
-      // frames behind and showing a stale grey backdrop right after the cut.
-      const RESAMPLE_EVERY = 1;
-      let frameCount = 0;
 
       function draw() {
         try {
           if (sized && video.readyState >= 2) {
             const w = canvas.width, h = canvas.height;
             ctx.drawImage(video, 0, 0, w, h);
-            if (frameCount % RESAMPLE_EVERY === 0) sampleBackgroundFromCanvas(w, h);
-            frameCount++;
+            updateBackground(w, h);
             const frame = ctx.getImageData(0, 0, w, h);
             const d = frame.data;
             const span = FAR - NEAR;
