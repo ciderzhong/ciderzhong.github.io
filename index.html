@@ -789,6 +789,121 @@
       .content-card-cover { width: 52px; height: 52px; }
     }
 
+    /* ── VIDEO EDITING: coverflow carousel (16:9 covers) ── */
+    .coverflow {
+      --cf-w: clamp(220px, 34vw, 420px);
+      --cf-h: calc(var(--cf-w) * 9 / 16);
+      position: relative;
+      width: 100%;
+    }
+
+    .coverflow-frame {
+      overflow: hidden;
+      padding: 2.5rem 0 1.5rem;
+      perspective: calc(var(--cf-w) * 2.6);
+      outline: none;
+    }
+
+    .coverflow-track {
+      position: relative;
+      height: var(--cf-h);
+      transform-style: preserve-3d;
+      user-select: none;
+    }
+
+    .coverflow-card {
+      position: absolute;
+      top: 0; left: 50%;
+      width: var(--cf-w);
+      height: var(--cf-h);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #E7E2F0;
+      box-shadow: 0 22px 55px rgba(42, 36, 64, 0.28);
+      cursor: grab;
+      will-change: transform, opacity;
+    }
+
+    .coverflow-card:active { cursor: grabbing; }
+
+    .coverflow-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      pointer-events: none;
+      -webkit-user-drag: none;
+    }
+
+    .coverflow-card-play {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      color: var(--lavender);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem;
+      padding-left: 3px;
+      box-shadow: 0 8px 20px rgba(42,36,64,0.3);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .coverflow-card.is-active .coverflow-card-play { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+    .coverflow-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 50;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      background: rgba(255,255,255,0.75);
+      color: var(--lavender);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s, color 0.25s;
+    }
+
+    .coverflow-nav:hover { background: var(--lavender); color: #fff; }
+    .coverflow-nav-prev { left: 0; }
+    .coverflow-nav-next { right: 0; }
+
+    .coverflow-caption {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    .coverflow-caption-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .coverflow-caption-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .coverflow-caption-hint {
+      font-size: 0.66rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lavender-light);
+    }
+
+    @media (max-width: 600px) {
+      .coverflow { --cf-w: min(72vw, 300px); }
+      .coverflow-nav { width: 32px; height: 32px; font-size: 1rem; }
+    }
+
     #experience { border-top: 0.5px solid var(--border); }
 
     .timeline { position: relative; padding-left: 2.5rem; }
@@ -1196,47 +1311,38 @@
       <button class="portfolio-modal-close" onclick="closePortfolioModal('videoModal')" aria-label="Close">✕</button>
       <p class="portfolio-modal-label">Work · Video Editing</p>
       <h3 class="portfolio-modal-title">Video Editing <span>视频剪辑</span></h3>
-      <div class="video-gallery-grid">
-        <div class="video-card" data-link="https://www.bilibili.com/video/BV1bRum6VEBH/?vd_source=a5168279942c7a95879b483a7ca13e83" style="aspect-ratio: 16 / 9;">
-          <img src="assets/video-posters/bay-area-coffee-festival.jpg" alt="湾区拉阔咖啡节 预热视频" />
-          <div class="video-card-play">▶</div>
-          <div class="video-card-info">
-            <span class="video-card-title">湾区拉阔咖啡节</span>
-            <span class="video-card-desc">30s预热视频</span>
+      <div class="coverflow" id="videoCoverflow" tabindex="0">
+        <button type="button" class="coverflow-nav coverflow-nav-prev" aria-label="Previous">‹</button>
+        <div class="coverflow-frame">
+          <div class="coverflow-track">
+            <div class="coverflow-card" data-link="https://www.bilibili.com/video/BV1bRum6VEBH/?vd_source=a5168279942c7a95879b483a7ca13e83" data-title="湾区拉阔咖啡节" data-subtitle="30s预热视频">
+              <img src="assets/video-posters/bay-area-coffee-festival.jpg" alt="湾区拉阔咖啡节 预热视频" />
+              <div class="coverflow-card-play">▶</div>
+            </div>
+            <div class="coverflow-card" data-link="https://www.xiaohongshu.com/explore/6995583b000000001d010d0f?app_platform=ios&app_version=9.28.1&share_from_user_hidden=true&xsec_source=app_share&type=video&xsec_token=CBfFuSZkx9-leAuBxydIyeM4F34Lo2hCWu9rBGuB4oMcA=&author_share=1&xhsshare=WeixinSession&shareRedId=N0g3Qzw2OU43OEdHOjgyPTw2PDlHNjs6&apptime=1786267792&share_id=0bc71d125c8c437d824cdac1144cb68e&code=8C3UKq6I15g&wechatWid=6dfb079b6ad795376e9edd6245eaaf3d&wechatOrigin=menu" data-title="Happy New Year" data-subtitle="AI创意视频">
+              <img src="assets/video-posters/happy-new-year-ai.jpg" alt="Happy New Year AI" />
+              <div class="coverflow-card-play">▶</div>
+            </div>
+            <div class="coverflow-card" data-link="https://weixin.qq.com/sph/AA9ivktCla" data-title="ECOFLEX视频号" data-subtitle="《酒店翻新最怕什么？》">
+              <img src="assets/video-posters/ECOFLEX-1.jpg" alt="ECOFLEX 视频号" />
+              <div class="coverflow-card-play">▶</div>
+            </div>
+            <div class="coverflow-card" data-link="https://www.bilibili.com/video/BV14fum66EBq/?vd_source=a5168279942c7a95879b483a7ca13e83" data-title="广州国际咖啡博览会" data-subtitle="宣传片">
+              <img src="assets/video-posters/international-coffee-festival.jpg" alt="广州国际咖啡博览会" />
+              <div class="coverflow-card-play">▶</div>
+            </div>
+            <div class="coverflow-card" data-link="https://www.bilibili.com/video/BV14fum66Er2/?vd_source=a5168279942c7a95879b483a7ca13e83" data-title="Sunquick新的果汁" data-subtitle="拍摄剪辑信息流">
+              <img src="assets/video-posters/sunquick.jpg" alt="Sunquick" />
+              <div class="coverflow-card-play">▶</div>
+            </div>
           </div>
         </div>
-        <div class="video-card" data-link="https://www.xiaohongshu.com/explore/6995583b000000001d010d0f?app_platform=ios&app_version=9.28.1&share_from_user_hidden=true&xsec_source=app_share&type=video&xsec_token=CBfFuSZkx9-leAuBxydIyeM4F34Lo2hCWu9rBGuB4oMcA=&author_share=1&xhsshare=WeixinSession&shareRedId=N0g3Qzw2OU43OEdHOjgyPTw2PDlHNjs6&apptime=1786267792&share_id=0bc71d125c8c437d824cdac1144cb68e&code=8C3UKq6I15g&wechatWid=6dfb079b6ad795376e9edd6245eaaf3d&wechatOrigin=menu">
-          <img src="assets/video-posters/happy-new-year-ai.jpg" alt="Happy New Year AI" />
-          <div class="video-card-play">▶</div>
-          <div class="video-card-info">
-            <span class="video-card-title">Happy New Year</span>
-            <span class="video-card-desc">AI创意视频</span>
-          </div>
-        </div>
-        <div class="video-card" data-link="https://weixin.qq.com/sph/AA9ivktCla" style="aspect-ratio: 16 / 9;">
-          <img src="assets/video-posters/ECOFLEX-1.jpg" alt="ECOFLEX 视频号" />
-          <div class="video-card-play">▶</div>
-          <div class="video-card-info">
-            <span class="video-card-title">ECOFLEX视频号</span>
-            <span class="video-card-desc">《酒店翻新最怕什么？》</span>
-          </div>
-        </div>
-        <div class="video-card" data-link="https://www.bilibili.com/video/BV14fum66EBq/?vd_source=a5168279942c7a95879b483a7ca13e83" style="aspect-ratio: 16 / 9;">
-          <img src="assets/video-posters/international-coffee-festival.jpg" alt="广州国际咖啡博览会" />
-          <div class="video-card-play">▶</div>
-          <div class="video-card-info">
-            <span class="video-card-title">广州国际咖啡博览会</span>
-            <span class="video-card-desc">宣传片</span>
-          </div>
-        </div>
-        <div class="video-card" data-link="https://www.bilibili.com/video/BV14fum66Er2/?vd_source=a5168279942c7a95879b483a7ca13e83" style="aspect-ratio: 16 / 9;">
-          <img src="assets/video-posters/sunquick.jpg" alt="Sunquick" />
-          <div class="video-card-play">▶</div>
-          <div class="video-card-info">
-            <span class="video-card-title">Sunquick新的果汁</span>
-            <span class="video-card-desc">拍摄剪辑信息流</span>
-          </div>
-        </div>
+        <button type="button" class="coverflow-nav coverflow-nav-next" aria-label="Next">›</button>
+      </div>
+      <div class="coverflow-caption">
+        <p class="coverflow-caption-title" id="cfCaptionTitle"></p>
+        <p class="coverflow-caption-subtitle" id="cfCaptionSubtitle"></p>
+        <p class="coverflow-caption-hint">点击封面查看视频</p>
       </div>
     </div>
   </div>
@@ -1616,23 +1722,154 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
       modal.addEventListener('click', (e) => { if (e.target === modal) closePortfolioModal(modal.id); });
     });
 
-    // Video lightbox playback
+    // Video lightbox playback (kept as a fallback player; not used by the
+    // coverflow cards below now that every video has an external link, but
+    // left in place in case a future card needs it again)
     const videoLightbox = document.getElementById('videoLightbox');
     const videoLightboxPlayer = document.getElementById('videoLightboxPlayer');
-    document.querySelectorAll('.video-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const link = card.getAttribute('data-link');
-        if (link) {
-          window.open(link, '_blank', 'noopener');
-          return;
+
+    // ── Video Editing: coverflow carousel ──
+    (function initCoverflow() {
+      const root = document.getElementById('videoCoverflow');
+      if (!root) return;
+      const track = root.querySelector('.coverflow-track');
+      const cards = Array.from(root.querySelectorAll('.coverflow-card'));
+      const prevBtn = root.querySelector('.coverflow-nav-prev');
+      const nextBtn = root.querySelector('.coverflow-nav-next');
+      const captionTitle = document.getElementById('cfCaptionTitle');
+      const captionSubtitle = document.getElementById('cfCaptionSubtitle');
+      const count = cards.length;
+      if (!count) return;
+
+      const ROTATE = 42;      // degrees the first neighbour tilts
+      const DEPTH = 0.55;     // recession, as a fraction of card width
+      const FALLOFF = 0.56;   // eases the tilt/recession off with distance
+      const FADE = 0.16;      // opacity lost per step from centre
+      const GAP = 0.14;       // spacing between cards, fraction of card width
+
+      let pos = 0;       // fractional index at centre
+      let target = 0;
+      let width = 0;
+      let raf = null;
+      let selected = 0;
+
+      function indexAt(p) { return ((Math.round(p) % count) + count) % count; }
+
+      function paint() {
+        if (!width) return;
+        const pitch = width * (1 + GAP);
+        cards.forEach((card, i) => {
+          let offset = i - pos;
+          offset = ((offset % count) + count) % count;
+          if (offset > count / 2) offset -= count;
+          const distance = Math.abs(offset);
+          const ramp = Math.pow(distance, FALLOFF);
+          const tilt = Math.min(ROTATE * ramp, 82) * Math.sign(offset);
+          card.style.transform =
+            `translateX(calc(-50% + ${offset * pitch}px)) translateZ(${-DEPTH * width * ramp}px) rotateY(${-tilt}deg)`;
+          const edge = Math.min(1, Math.max(0, count / 2 - distance));
+          card.style.opacity = String(Math.max(0, 1 - FADE * distance) * edge);
+          card.style.zIndex = String(100 - Math.round(distance));
+        });
+      }
+
+      function updateCaption() {
+        const card = cards[selected];
+        if (!card || !captionTitle || !captionSubtitle) return;
+        captionTitle.textContent = card.getAttribute('data-title') || '';
+        captionSubtitle.textContent = card.getAttribute('data-subtitle') || '';
+        cards.forEach((c, i) => c.classList.toggle('is-active', i === selected));
+      }
+
+      function settle(t) {
+        if (raf !== null) cancelAnimationFrame(raf);
+        target = t;
+        selected = indexAt(t);
+        updateCaption();
+        const step = () => {
+          const remaining = target - pos;
+          if (Math.abs(remaining) < 0.0004) {
+            pos = target;
+            paint();
+            raf = null;
+            return;
+          }
+          pos += remaining * 0.18;
+          paint();
+          raf = requestAnimationFrame(step);
+        };
+        raf = requestAnimationFrame(step);
+      }
+
+      function goTo(index) {
+        const t = index + Math.round((target - index) / count) * count;
+        settle(t);
+      }
+
+      function nudge(by) { settle(Math.round(target) + by); }
+
+      function measure() {
+        width = cards[0].offsetWidth;
+        paint();
+      }
+      measure();
+      window.addEventListener('resize', measure);
+
+      if (prevBtn) prevBtn.addEventListener('click', () => nudge(-1));
+      if (nextBtn) nextBtn.addEventListener('click', () => nudge(1));
+
+      root.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); nudge(-1); }
+        else if (e.key === 'ArrowRight') { e.preventDefault(); nudge(1); }
+        else if (e.key === 'Enter') {
+          const link = cards[selected].getAttribute('data-link');
+          if (link) window.open(link, '_blank', 'noopener');
         }
-        const src = card.getAttribute('data-video');
-        if (!src || !videoLightboxPlayer) return;
-        videoLightboxPlayer.src = src;
-        videoLightbox.classList.add('open');
-        videoLightboxPlayer.play().catch(() => {});
       });
-    });
+
+      // Pointer drag to spin the carousel; a tap (little movement) on a card
+      // either opens its link (if it's already centred) or brings it to centre.
+      let drag = null;
+      root.addEventListener('pointerdown', (e) => {
+        if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
+        target = pos;
+        drag = { x: e.clientX, startPos: pos, moved: 0 };
+        root.setPointerCapture(e.pointerId);
+      });
+      root.addEventListener('pointermove', (e) => {
+        if (!drag) return;
+        const pitch = width * (1 + GAP);
+        if (!pitch) return;
+        const dx = e.clientX - drag.x;
+        drag.moved = Math.max(drag.moved, Math.abs(dx));
+        pos = drag.startPos - dx / pitch;
+        selected = indexAt(pos);
+        updateCaption();
+        paint();
+      });
+      function endDrag(e) {
+        if (!drag) return;
+        const wasClick = drag.moved < 6;
+        const clickedCard = wasClick ? e.target.closest('.coverflow-card') : null;
+        drag = null;
+        if (clickedCard) {
+          const idx = cards.indexOf(clickedCard);
+          if (idx === selected) {
+            const link = clickedCard.getAttribute('data-link');
+            if (link) window.open(link, '_blank', 'noopener');
+            settle(Math.round(target));
+          } else {
+            goTo(idx);
+          }
+        } else {
+          settle(Math.round(pos));
+        }
+      }
+      root.addEventListener('pointerup', endDrag);
+      root.addEventListener('pointercancel', endDrag);
+
+      settle(0);
+    })();
     function closeVideoLightbox() {
       if (!videoLightboxPlayer) return;
       videoLightboxPlayer.pause();
