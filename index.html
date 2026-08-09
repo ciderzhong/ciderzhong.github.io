@@ -803,6 +803,28 @@
 
     .timeline-item:last-child { border-bottom: none; margin-bottom: 0; }
 
+    /* ── EXPERIENCE: cursor-following hover image ── */
+    .timeline-item[data-hover-img] { cursor: pointer; }
+
+    .timeline-hover-img {
+      position: absolute;
+      top: 0; left: 0;
+      width: 260px;
+      height: 190px;
+      object-fit: cover;
+      border-radius: 12px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 5;
+      box-shadow: 0 20px 50px rgba(42, 36, 64, 0.28);
+      transition: opacity 0.25s ease;
+      will-change: transform, opacity;
+    }
+
+    .timeline-hover-img.visible { opacity: 1; }
+
+    @media (max-width: 900px) { .timeline-hover-img { display: none; } }
+
     .timeline-dot {
       position: absolute;
       left: -2.5rem; top: 0.4rem;
@@ -1086,22 +1108,22 @@
       <img class="deco-shell deco-experience" src="assets/shells/shell-scallop-worn.png" alt="" aria-hidden="true"/>
       <p class="section-label fade-in">Journey</p>
       <h2 class="section-title fade-in fade-in-delay-1">Experience</h2>
-      <div class="timeline">
-        <div class="timeline-item fade-in">
+      <div class="timeline" id="timelineHoverArea">
+        <div class="timeline-item fade-in" data-hover-img="assets/experience/freelance.jpg">
           <div class="timeline-dot"></div>
           <div class="timeline-year">2025 — 2026</div>
           <div class="timeline-role">Freelance Creator</div>
           <div class="timeline-org">广州 · 自由职业</div>
           <p class="timeline-desc">自由策划与剪辑，客户包含新的果汁、广州国际咖啡博览会、ECOFLEX。旅居清迈、云南，游历越南全境。</p>
         </div>
-        <div class="timeline-item fade-in fade-in-delay-1">
+        <div class="timeline-item fade-in fade-in-delay-1" data-hover-img="assets/experience/ecoflex.jpg">
           <div class="timeline-dot"></div>
           <div class="timeline-year">2022 — 2024</div>
           <div class="timeline-role">Head of Content</div>
           <div class="timeline-org">ECOFLEX 优智装 · 内容运营主管</div>
           <p class="timeline-desc">负责品牌话语体系建设，独立完成150+篇短视频脚本，管理视频号与抖音品牌矩阵，制定B端差异化内容策略，推动汉国置业在深圳与广州的项目落地。</p>
         </div>
-        <div class="timeline-item fade-in fade-in-delay-2">
+        <div class="timeline-item fade-in fade-in-delay-2" data-hover-img="assets/experience/design-china.jpg">
           <div class="timeline-dot"></div>
           <div class="timeline-year">2021</div>
           <div class="timeline-role">Curatorial Assistant</div>
@@ -1116,6 +1138,7 @@
           <p class="timeline-desc">负责书店文创区域的展台设计与陈列展示。</p>
         </div>
       </div>
+      <img class="timeline-hover-img" id="timelineHoverImg" alt="" />
     </section>
   </div>
 
@@ -1528,6 +1551,43 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Experience: cursor-following hover image (reveals a photo near the pointer
+    // while hovering a timeline entry that has data-hover-img, with light spring easing)
+    (function initTimelineHoverImage() {
+      const area = document.getElementById('timelineHoverArea');
+      const img = document.getElementById('timelineHoverImg');
+      const section = document.getElementById('experience');
+      if (!area || !img || !section) return;
+
+      let targetX = 0, targetY = 0, curX = 0, curY = 0;
+      let raf = null;
+
+      function animate() {
+        curX += (targetX - curX) * 0.18;
+        curY += (targetY - curY) * 0.18;
+        img.style.transform = `translate(${curX}px, ${curY}px)`;
+        raf = requestAnimationFrame(animate);
+      }
+      raf = requestAnimationFrame(animate);
+
+      function updateTarget(e) {
+        const rect = section.getBoundingClientRect();
+        targetX = e.clientX - rect.left - img.offsetWidth / 2;
+        targetY = e.clientY - rect.top - img.offsetHeight / 2;
+      }
+
+      area.querySelectorAll('.timeline-item[data-hover-img]').forEach(item => {
+        item.addEventListener('mouseenter', (e) => {
+          img.src = item.getAttribute('data-hover-img');
+          updateTarget(e);
+          curX = targetX; curY = targetY; // snap in at entry point, then spring on move
+          img.classList.add('visible');
+        });
+        item.addEventListener('mousemove', updateTarget);
+        item.addEventListener('mouseleave', () => img.classList.remove('visible'));
+      });
+    })();
 
     // Portfolio expand modal (click a category card -> gallery of that category's work)
     function openPortfolioModal(id) {
