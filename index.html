@@ -580,9 +580,206 @@
 
     .video-lightbox-close:hover { background: rgba(255,255,255,0.2); }
 
+    /* ── POSTER GALLERY (images only, click to enlarge) ── */
+    .poster-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .poster-card {
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #E7E2F0;
+      aspect-ratio: 3 / 4;
+      position: relative;
+    }
+
+    .poster-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .poster-card:hover img { transform: scale(1.05); }
+
+    .image-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(20, 16, 32, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .image-lightbox.open { opacity: 1; pointer-events: auto; }
+
+    .image-lightbox img {
+      max-width: min(92vw, 720px);
+      max-height: 86vh;
+      border-radius: 10px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+
+    .image-lightbox-close {
+      position: absolute;
+      top: 1.75rem; right: 1.75rem;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 0.5px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.25s;
+    }
+
+    .image-lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* ── SOCIAL MEDIA CONTENT: click-to-expand accordion cards ── */
+    .content-accordion { display: flex; flex-direction: column; gap: 1rem; }
+
+    .content-card {
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.4);
+      transition: box-shadow 0.3s;
+    }
+
+    .content-card.expanded { box-shadow: 0 12px 32px rgba(42,36,64,0.12); }
+
+    .content-card-head {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      padding: 1.1rem 1.4rem;
+      cursor: pointer;
+    }
+
+    .content-card-cover {
+      flex-shrink: 0;
+      width: 64px; height: 64px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #DCD3EE, #EFE4E9);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .content-card-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .content-card-cover-icon { font-size: 1.4rem; color: var(--lavender); opacity: 0.6; }
+
+    .content-card-meta { flex: 1; min-width: 0; }
+
+    .content-card-tag {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--lavender-light);
+      margin-bottom: 0.3rem;
+    }
+
+    .content-card-title {
+      font-family: 'Noto Serif SC', serif;
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .content-card-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .content-card-toggle {
+      flex-shrink: 0;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--lavender);
+      font-size: 0.85rem;
+      transition: transform 0.3s;
+    }
+
+    .content-card.expanded .content-card-toggle { transform: rotate(45deg); }
+
+    .content-card-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.45s ease;
+    }
+
+    .content-card.expanded .content-card-body { max-height: 3200px; }
+
+    .content-card-body-inner {
+      padding: 0 1.4rem 1.6rem;
+      border-top: 0.5px solid var(--border);
+      margin-top: 0.2rem;
+      padding-top: 1.2rem;
+    }
+
+    .content-card-text {
+      font-size: 0.82rem;
+      line-height: 1.95;
+      color: var(--text);
+      white-space: pre-line;
+      max-width: 720px;
+    }
+
+    .content-card-text strong {
+      color: var(--lavender);
+      font-weight: 400;
+    }
+
+    .content-links {
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 0.5px solid var(--border);
+    }
+
+    .content-links-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--lavender-light);
+      margin-bottom: 1rem;
+    }
+
+    .content-link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 0;
+      border-bottom: 0.5px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.85rem;
+      transition: color 0.25s;
+    }
+
+    .content-link-item:hover { color: var(--apple-red); }
+    .content-link-item span.arrow { color: var(--lavender-light); font-size: 0.9rem; }
+
     @media (max-width: 600px) {
       .portfolio-modal-inner { padding: 2.25rem 1.25rem; }
       .video-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.85rem; }
+      .poster-gallery-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.85rem; }
+      .content-card-head { padding: 1rem; gap: 0.85rem; }
+      .content-card-cover { width: 52px; height: 52px; }
     }
 
     #experience { border-top: 0.5px solid var(--border); }
@@ -853,7 +1050,7 @@
           </div>
           <span class="portfolio-arrow">→</span>
         </div>
-        <div class="portfolio-item fade-in fade-in-delay-1">
+        <div class="portfolio-item fade-in fade-in-delay-1" onclick="openPortfolioModal('posterModal')">
           <div>
             <div class="portfolio-item-num">02</div>
             <div class="portfolio-item-title">Poster Design</div>
@@ -862,7 +1059,7 @@
           </div>
           <span class="portfolio-arrow">→</span>
         </div>
-        <div class="portfolio-item fade-in fade-in-delay-2">
+        <div class="portfolio-item fade-in fade-in-delay-2" onclick="openPortfolioModal('socialModal')">
           <div>
             <div class="portfolio-item-num">03</div>
             <div class="portfolio-item-title">Social Media Content</div>
@@ -1014,6 +1211,179 @@
   <div class="video-lightbox" id="videoLightbox">
     <button class="video-lightbox-close" onclick="closeVideoLightbox()" aria-label="Close">✕</button>
     <video id="videoLightboxPlayer" controls playsinline></video>
+  </div>
+
+  <!-- Poster Design portfolio expand modal -->
+  <div class="portfolio-modal" id="posterModal">
+    <div class="portfolio-modal-inner">
+      <button class="portfolio-modal-close" onclick="closePortfolioModal('posterModal')" aria-label="Close">✕</button>
+      <p class="portfolio-modal-label">Work · Poster Design</p>
+      <h3 class="portfolio-modal-title">Poster Design <span>海报设计</span></h3>
+      <div class="poster-gallery-grid">
+        <div class="poster-card" data-img="assets/poster/graduation-collage.jpg">
+          <img src="assets/poster/graduation-collage.jpg" alt="Graduation collage poster" />
+        </div>
+        <div class="poster-card" data-img="assets/poster/summer-collage.jpg">
+          <img src="assets/poster/summer-collage.jpg" alt="Summer collage poster" />
+        </div>
+        <div class="poster-card" data-img="assets/poster/no-violence.jpg">
+          <img src="assets/poster/no-violence.jpg" alt="No Violence issue-based poster" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Media Content portfolio expand modal -->
+  <div class="portfolio-modal" id="socialModal">
+    <div class="portfolio-modal-inner">
+      <button class="portfolio-modal-close" onclick="closePortfolioModal('socialModal')" aria-label="Close">✕</button>
+      <p class="portfolio-modal-label">Work · Social Media Content</p>
+      <h3 class="portfolio-modal-title">Social Media Content <span>社媒内容运营</span></h3>
+
+      <div class="content-accordion">
+        <!-- 1. TikTok / 抖音短视频脚本 -->
+        <div class="content-card" id="contentCard1">
+          <div class="content-card-head" onclick="toggleContentCard('contentCard1')">
+            <div class="content-card-cover">
+              <!-- TODO: 替换为真实封面图，例如成片截图或分镜示意图 -->
+              <span class="content-card-cover-icon">▶</span>
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">短视频脚本 · Script</div>
+              <div class="content-card-title">装配式装修 · 反转找茬脚本</div>
+              <div class="content-card-title-en">"100万打水漂？" — Modular Renovation</div>
+            </div>
+            <div class="content-card-toggle">+</div>
+          </div>
+          <div class="content-card-body">
+            <div class="content-card-body-inner">
+              <p class="content-card-text">场景 1 · 黄金3秒
+霍霍对着展厅工作人员说：你说这东西能颠覆传统装修？而且还比人工装修质量好5倍，速度快2倍？
+在工地上，霍霍拿着手机听语音，老板发来语音条：「中五路二号那个别墅，用这种新技术去做吧，我已经付了钱了，一百来万，全屋都装修完，你去对接一下。」（不讲明是装配式装修，下钩子）
+
+场景 2 · 反转
+霍霍一脸愤懑地把手机丢掉：「又100w打水漂，我去你个鬼啊」
+镜头直接切到装配式展厅，霍霍东张西望、充满好奇——要跟前面的抗拒态度形成明显反差。
+
+场景 3 · 找茬
+霍霍拿着手机扫一圈，看不出是装配式还是普通装修：「你还说你是装配式装修公司，自己展厅都还用的传统工艺啊」
+
+场景 4 · 反转
+工作人员直接把一块墙面拉开，展示这其实都是装配式装修。
+霍霍自拍尴尬表情（戴口罩）：「啊，行吧行吧（内心os）」
+继续找茬：「这种简单的墙面有，我老板那边要求可不少，木饰面，岩板，艺术涂料，还有点墙布，这些你们能做咩？」
+
+场景 5 · 反转
+工作人员：「这是我们的一小部分材料样板，除了刚刚您说的这几种，像是不锈钢、玻璃、大理石、皮的，特殊工艺的面材我们都可以做，而且都是工厂做好，直接现场安装，速度快，质量好。」
+自言自语：「嚯，还有点东西啊」
+
+场景 6 · 反转
+换一个密闭空间继续找茬：「你们这中间是龙骨结构，这个怎么隔音，一点隐私都没有」
+房间外放歌，工作人员不停开关门——开门能听到外面声音，关门就听不到。
+一脸懵：「额……算你赢」
+
+结尾引导
+「这种装配式装修速度非常快：龙骨生产3天、安装3天；面材生产20天、现场安装（含水电）30天；再留一个月给空调、电器、柜子、软装入场，基本3个月就能住进去。关键是工业化生产全是统一标准，质量有保障，不像普通装修全靠师傅人工，难以标准化。」
+「朋友们，有这100w，你们是选择装配式装修，还是现在的普通装修呢？」</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 公众号文案 / 设计中国 -->
+        <div class="content-card" id="contentCard2">
+          <div class="content-card-head" onclick="toggleContentCard('contentCard2')">
+            <div class="content-card-cover">
+              <!-- TODO: 替换为真实封面图，例如推文首图 -->
+              <span class="content-card-cover-icon">✎</span>
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">公众号推文 · WeChat Article</div>
+              <div class="content-card-title">数未来城市设计，还看「设计中国」</div>
+              <div class="content-card-title-en">Design China — Exhibition Recap</div>
+            </div>
+            <div class="content-card-toggle">+</div>
+          </div>
+          <div class="content-card-body">
+            <div class="content-card-body-inner">
+              <p class="content-card-text">"设计一座城，是设计的初端和划山画海的大开之笔，从此，文明与历史粉墨登场。"
+
+「设计中国」作为中国室内设计领域首个空间实验策展活动，从2018年伊始，到现在已经走过了三年。
+
+中国拥有世界上最富戏剧性的自然景观，高原、山林、湖泊、海岸线，丰富的地理跨度也使这片土地上的地域文化有着万千姿态。为了实现对未来城市生活空间的想象，广州设计周寻找城市设计力量团体——「设计中国」由此诞生。
+
+<strong>2018 设计中国 · 诞生</strong>
+由广州设计周正式推出，联合《现代装饰》杂志和领路营销策划共同发起，是中国室内设计领域首个空间设计实验策展活动。本届邀请了来自长沙、佛山、福州、南昌、上海、武汉、西安7个城市的设计师/设计公司，完成了2018设计中国的惊艳首秀。
+
+<strong>2019 设计中国 · 接棒</strong>
+沿袭上一年的策划运营，旨在树立未来城市设计品牌，搭建地域设计团体交流平台。本届邀请了来自重庆、佛山、福州、广州、嘉兴、南京、湛江7个城市的设计师/设计公司，书写属于他们的城市幻想。
+
+<strong>2020 设计中国 · 破局</strong>
+升级为中国城市设计团体实战赛，以城市为设计单位，展开策展设计并于现场呈现，由设计中国100大观察团现场体验评审并投票产生年度大奖。本届邀请了来自温州、常州、东莞、佛山、福建、广州、南宁7个城市的设计师/设计公司。
+
+<strong>2021 设计中国 · 新生</strong>
+启动全新规则，增设「设计中国最具人气奖」与「设计中国年度先锋榜」，参赛展位升级为可拆卸展位，打造可持续发展、环保展览；并迎来战略合作伙伴东鹏岩板，携手举办全国巡回论坛暨新品发布会。
+
+2021年是设计中国第四年征途，披星戴月，栉风沐雨。12月9-12日，广州设计周约定你来见证最先锋的城市设计！</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 案例解读 / ECOFLEX HonLink -->
+        <div class="content-card" id="contentCard3">
+          <div class="content-card-head" onclick="toggleContentCard('contentCard3')">
+            <div class="content-card-cover">
+              <!-- TODO: 替换为真实封面图，例如项目实景图 -->
+              <span class="content-card-cover-icon">◆</span>
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">品牌案例文案 · Case Study</div>
+              <div class="content-card-title">三度携手，续写重庆「HonLink 汉·林间」</div>
+              <div class="content-card-title-en">ECOFLEX × HonGuo — Case Study</div>
+            </div>
+            <div class="content-card-toggle">+</div>
+          </div>
+          <div class="content-card-body">
+            <div class="content-card-body-inner">
+              <p class="content-card-text">继广州汉国大厦、深圳汉国中心两大项目圆满落地后，近期 ECOFLEX 再度携手汉国置业，以成熟的装配式绿色精装体系，为汉国位于重庆的「HonLink 汉·林间精装定制办公空间」提供全流程精装装配落地服务，续写双方长期合作的共赢篇章。
+
+本次重庆项目 ECOFLEX 延续一贯坚持的绿色、健康、低碳、智造定位，利用 BIM+设计平台，结合专利磁吸装配产品，最快可以实现21天极速交付，完美匹配汉国置业对高端商办空间的品质要求，为西南商办市场注入绿色办公新活力。
+
+<strong>不止汉国品牌，为何高端商办品牌更愿意长期选择 ECOFLEX？</strong>
+
+<strong>品牌信誉：雇主信任度高，筑牢长远合作根基</strong>
+ECOFLEX 深耕装配式精装领域，凭借稳定的品质输出与良好口碑，积累了高雇主信任度，这也是汉国置业从广州、深圳到重庆持续选择 ECOFLEX 的核心底气。所有部品多重质检，务求实现产品零返工、空间零投诉、交付零等待；面对多城跨区域需求，始终保持标准化品控，无隐形增项、无品质偏差。
+
+<strong>服务到位：产品共创赋能企业核心竞争力</strong>
+ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异化产品。装配产品支持反复拆装、随装随用，符合国际 WELL 和 LEED 健康建筑产品标准与国内绿色十环标准，为业主方实施 ESG 运营策略提供便利。
+
+<strong>企业伴飞：全生命周期服务，共成长同发展</strong>
+从项目前期对接全国化战略、搭建跨城交付体系，到交付后的定期巡检、及时维修，再到产品升级阶段结合技术迭代提供优化建议——ECOFLEX 以「企业伴飞」理念，随企业成长适配不同阶段需求。
+
+从单次合作到持续绑定，这份伙伴关系是对 ECOFLEX 实力的认可，更是双方信任同行、协同共赢的最好见证。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-links">
+        <p class="content-links-label">延伸阅读 · Read More</p>
+        <!-- TODO: 替换为真实链接标题与网址 -->
+        <a class="content-link-item" href="#" target="_blank">
+          <span>链接标题 1（待补充）</span><span class="arrow">→</span>
+        </a>
+        <a class="content-link-item" href="#" target="_blank">
+          <span>链接标题 2（待补充）</span><span class="arrow">→</span>
+        </a>
+        <a class="content-link-item" href="#" target="_blank">
+          <span>链接标题 3（待补充）</span><span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-lightbox" id="imageLightbox">
+    <button class="image-lightbox-close" onclick="closeImageLightbox()" aria-label="Close">✕</button>
+    <img id="imageLightboxPic" src="" alt="" />
   </div>
 
 
@@ -1171,10 +1541,38 @@
     if (videoLightbox) {
       videoLightbox.addEventListener('click', (e) => { if (e.target === videoLightbox) closeVideoLightbox(); });
     }
+
+    // Poster image lightbox (click a poster to view it larger)
+    const imageLightbox = document.getElementById('imageLightbox');
+    const imageLightboxPic = document.getElementById('imageLightboxPic');
+    document.querySelectorAll('.poster-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const src = card.getAttribute('data-img');
+        if (!src || !imageLightboxPic) return;
+        imageLightboxPic.src = src;
+        imageLightbox.classList.add('open');
+      });
+    });
+    function closeImageLightbox() {
+      if (!imageLightbox) return;
+      imageLightbox.classList.remove('open');
+    }
+    if (imageLightbox) {
+      imageLightbox.addEventListener('click', (e) => { if (e.target === imageLightbox) closeImageLightbox(); });
+    }
+
+    // Social media content cards: click to expand / collapse
+    function toggleContentCard(id) {
+      const card = document.getElementById(id);
+      if (!card) return;
+      card.classList.toggle('expanded');
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       document.querySelectorAll('.portfolio-modal.open').forEach(m => closePortfolioModal(m.id));
       closeVideoLightbox();
+      closeImageLightbox();
     });
 
     // Mouse parallax for flowers
