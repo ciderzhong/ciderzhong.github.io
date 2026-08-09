@@ -530,8 +530,15 @@
     }
 
     .video-card-title {
-      font-size: 0.76rem;
+      font-size: 0.95rem;
+      font-weight: 500;
       color: #fff;
+      line-height: 1.4;
+    }
+
+    .video-card-desc {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.8);
       line-height: 1.4;
     }
 
@@ -1190,41 +1197,44 @@
       <p class="portfolio-modal-label">Work · Video Editing</p>
       <h3 class="portfolio-modal-title">Video Editing <span>视频剪辑</span></h3>
       <div class="video-gallery-grid">
-        <div class="video-card" data-video="assets/videos/bay-area-coffee-festival.mp4" style="aspect-ratio: 16 / 9;">
+        <div class="video-card" data-link="https://www.bilibili.com/video/BV1bRum6VEBH/?vd_source=a5168279942c7a95879b483a7ca13e83" style="aspect-ratio: 16 / 9;">
           <img src="assets/video-posters/bay-area-coffee-festival.jpg" alt="湾区拉阔咖啡节 预热视频" />
           <div class="video-card-play">▶</div>
           <div class="video-card-info">
-            <span class="video-card-title">湾区拉阔咖啡节 · 预热视频</span>
-            <span class="video-card-meta">0:31</span>
+            <span class="video-card-title">湾区拉阔咖啡节</span>
+            <span class="video-card-desc">30s预热视频</span>
           </div>
         </div>
-        <div class="video-card" data-video="assets/videos/happy-new-year-ai.mp4">
+        <div class="video-card" data-link="https://www.xiaohongshu.com/explore/6995583b000000001d010d0f?app_platform=ios&app_version=9.28.1&share_from_user_hidden=true&xsec_source=app_share&type=video&xsec_token=CBfFuSZkx9-leAuBxydIyeM4F34Lo2hCWu9rBGuB4oMcA=&author_share=1&xhsshare=WeixinSession&shareRedId=N0g3Qzw2OU43OEdHOjgyPTw2PDlHNjs6&apptime=1786267792&share_id=0bc71d125c8c437d824cdac1144cb68e&code=8C3UKq6I15g&wechatWid=6dfb079b6ad795376e9edd6245eaaf3d&wechatOrigin=menu">
           <img src="assets/video-posters/happy-new-year-ai.jpg" alt="Happy New Year AI" />
           <div class="video-card-play">▶</div>
           <div class="video-card-info">
-            <span class="video-card-title">Happy New Year（AI创意视频）</span>
-            <span class="video-card-meta">0:27</span>
+            <span class="video-card-title">Happy New Year</span>
+            <span class="video-card-desc">AI创意视频</span>
           </div>
         </div>
-        <div class="video-card" data-video="assets/videos/ECOFLEX-1.mp4" style="aspect-ratio: 16 / 9;">
-          <img src="assets/video-posters/ECOFLEX-1.jpg" alt="ECOFLEX" />
+        <div class="video-card" data-link="https://weixin.qq.com/sph/AA9ivktCla" style="aspect-ratio: 16 / 9;">
+          <img src="assets/video-posters/ECOFLEX-1.jpg" alt="ECOFLEX 视频号" />
           <div class="video-card-play">▶</div>
           <div class="video-card-info">
-            <span class="video-card-title">ECOFLEX</span>
+            <span class="video-card-title">ECOFLEX视频号</span>
+            <span class="video-card-desc">《酒店翻新最怕什么？》</span>
           </div>
         </div>
-        <div class="video-card" data-video="assets/videos/international-coffee-festival.mp4" style="aspect-ratio: 16 / 9;">
+        <div class="video-card" data-link="https://www.bilibili.com/video/BV14fum66EBq/?vd_source=a5168279942c7a95879b483a7ca13e83" style="aspect-ratio: 16 / 9;">
           <img src="assets/video-posters/international-coffee-festival.jpg" alt="广州国际咖啡博览会" />
           <div class="video-card-play">▶</div>
           <div class="video-card-info">
             <span class="video-card-title">广州国际咖啡博览会</span>
+            <span class="video-card-desc">宣传片</span>
           </div>
         </div>
-        <div class="video-card" data-video="assets/videos/sunquick.mp4" style="aspect-ratio: 16 / 9;">
+        <div class="video-card" data-link="https://www.bilibili.com/video/BV14fum66Er2/?vd_source=a5168279942c7a95879b483a7ca13e83" style="aspect-ratio: 16 / 9;">
           <img src="assets/video-posters/sunquick.jpg" alt="Sunquick" />
           <div class="video-card-play">▶</div>
           <div class="video-card-info">
-            <span class="video-card-title">Sunquick</span>
+            <span class="video-card-title">Sunquick新的果汁</span>
+            <span class="video-card-desc">拍摄剪辑信息流</span>
           </div>
         </div>
       </div>
@@ -1611,6 +1621,11 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
     const videoLightboxPlayer = document.getElementById('videoLightboxPlayer');
     document.querySelectorAll('.video-card').forEach(card => {
       card.addEventListener('click', () => {
+        const link = card.getAttribute('data-link');
+        if (link) {
+          window.open(link, '_blank', 'noopener');
+          return;
+        }
         const src = card.getAttribute('data-video');
         if (!src || !videoLightboxPlayer) return;
         videoLightboxPlayer.src = src;
