@@ -652,6 +652,37 @@
 
     .image-lightbox-close:hover { background: rgba(255,255,255,0.2); }
 
+    /* ── SOCIAL MEDIA CONTENT: filter tabs ── */
+    .content-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 2rem;
+    }
+
+    .content-filter-btn {
+      border: 0.5px solid var(--lavender-pale);
+      background: rgba(255,255,255,0.4);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.74rem;
+      letter-spacing: 0.06em;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+
+    .content-filter-btn:hover { color: var(--lavender); border-color: var(--lavender-light); }
+
+    .content-filter-btn.active {
+      background: var(--lavender);
+      color: #fff;
+      border-color: var(--lavender);
+    }
+
+    .content-card[hidden] { display: none; }
+
     /* ── SOCIAL MEDIA CONTENT: click-to-expand accordion cards ── */
     .content-accordion { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -661,6 +692,7 @@
       overflow: hidden;
       background: rgba(255,255,255,0.4);
       transition: box-shadow 0.3s;
+      display: block;
     }
 
     .content-card.expanded { box-shadow: 0 12px 32px rgba(42,36,64,0.12); }
@@ -780,6 +812,12 @@
 
     .content-link-item:hover { color: var(--apple-red); }
     .content-link-item span.arrow { color: var(--lavender-light); font-size: 0.9rem; }
+
+    /* Public-account cards link straight out to the article; no accordion body */
+    .content-card-link .content-card-head { text-decoration: none; }
+    .content-card-link .content-card-toggle { color: var(--lavender); font-size: 1rem; }
+    a.content-card-link { text-decoration: none; }
+    a.content-card-link:hover .content-card-title { color: var(--apple-red); }
 
     @media (max-width: 600px) {
       .portfolio-modal-inner { padding: 2.25rem 1.25rem; }
@@ -925,27 +963,41 @@
 
     .timeline-item:last-child { border-bottom: none; margin-bottom: 0; }
 
-    /* ── EXPERIENCE: cursor-following hover image ── */
-    .timeline-item[data-hover-img] { cursor: pointer; }
-
+    /* ── EXPERIENCE: scroll-triggered reveal image ── */
     .timeline-hover-img {
-      position: absolute;
-      top: 0; left: 0;
+      position: fixed;
+      top: 50%;
+      right: 4rem;
       width: 260px;
       height: 190px;
       object-fit: cover;
       border-radius: 12px;
       pointer-events: none;
       opacity: 0;
-      z-index: 5;
+      z-index: 20;
       box-shadow: 0 20px 50px rgba(42, 36, 64, 0.28);
-      transition: opacity 0.25s ease;
+      transform: translateY(-50%) translateX(28px) scale(0.96);
+      transition: opacity 0.7s cubic-bezier(.16,.84,.44,1), transform 0.7s cubic-bezier(.16,.84,.44,1);
       will-change: transform, opacity;
     }
 
-    .timeline-hover-img.visible { opacity: 1; }
+    .timeline-hover-img.visible {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0) scale(1);
+    }
 
-    @media (max-width: 900px) { .timeline-hover-img { display: none; } }
+    @media (max-width: 900px) {
+      .timeline-hover-img {
+        top: auto;
+        bottom: 1.5rem;
+        left: 1.5rem;
+        right: 1.5rem;
+        width: auto;
+        height: 200px;
+        transform: translateY(24px) scale(0.97);
+      }
+      .timeline-hover-img.visible { transform: translateY(0) scale(1); }
+    }
 
     .timeline-dot {
       position: absolute;
@@ -1379,13 +1431,138 @@
       <p class="portfolio-modal-label">Work · Social Media Content</p>
       <h3 class="portfolio-modal-title">Social Media Content <span>社媒内容运营</span></h3>
 
-      <div class="content-accordion">
-        <!-- 1. TikTok / 抖音短视频脚本 -->
-        <div class="content-card" id="contentCard1">
+      <div class="content-filters" id="contentFilters">
+        <button class="content-filter-btn active" data-filter="all">全部 · All</button>
+        <button class="content-filter-btn" data-filter="wechat">公众号推文</button>
+        <button class="content-filter-btn" data-filter="case">品牌案例文案</button>
+        <button class="content-filter-btn" data-filter="script">短视频脚本</button>
+      </div>
+
+      <div class="content-accordion" id="contentAccordion">
+
+        <!-- 公众号推文 1 · 说到紫色，你会想起什么？ -->
+        <a class="content-card content-card-link" data-category="wechat" href="https://mp.weixin.qq.com/s/w8LCC4dshH3n7qdxFCv_0Q" target="_blank" rel="noopener">
+          <div class="content-card-head">
+            <div class="content-card-cover">
+              <img src="assets/social/purple-cover.jpg" alt="说到紫色，你会想起什么？封面" />
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">公众号推文 · WeChat Article</div>
+              <div class="content-card-title">说到紫色，你会想起什么？</div>
+              <div class="content-card-title-en">On the Color Purple</div>
+            </div>
+            <div class="content-card-toggle">↗</div>
+          </div>
+        </a>
+
+        <!-- 公众号推文 2 · 数未来城市设计，还看「设计中国」！ -->
+        <a class="content-card content-card-link" data-category="wechat" href="https://mp.weixin.qq.com/s/v-_QrM_Pxk70lGKzRW8B6Q" target="_blank" rel="noopener">
+          <div class="content-card-head">
+            <div class="content-card-cover">
+              <img src="assets/social/design-china-cover.webp" alt="数未来城市设计，还看「设计中国」！封面" />
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">公众号推文 · WeChat Article</div>
+              <div class="content-card-title">数未来城市设计，还看「设计中国」！</div>
+              <div class="content-card-title-en">Design China — Exhibition Recap</div>
+            </div>
+            <div class="content-card-toggle">↗</div>
+          </div>
+        </a>
+
+        <!-- 公众号推文 3 · 来广州听会 -->
+        <a class="content-card content-card-link" data-category="wechat" href="https://mp.weixin.qq.com/s/l3sfGQyc0g-wQtW5_IkQyQ" target="_blank" rel="noopener">
+          <div class="content-card-head">
+            <div class="content-card-cover">
+              <img src="assets/social/design-china-cover.webp" alt="来广州听会封面" />
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">公众号推文 · WeChat Article</div>
+              <div class="content-card-title">来广州听会 | 2021设计中国抢先看！7大空间实验策展，7种地域文化当代表达</div>
+              <div class="content-card-title-en">Design China 2021 — Preview</div>
+            </div>
+            <div class="content-card-toggle">↗</div>
+          </div>
+        </a>
+
+        <!-- 品牌案例文案 1 · ECOFLEX × HonLink -->
+        <div class="content-card" data-category="case" id="contentCard1">
           <div class="content-card-head" onclick="toggleContentCard('contentCard1')">
             <div class="content-card-cover">
-              <!-- TODO: 替换为真实封面图，例如成片截图或分镜示意图 -->
-              <span class="content-card-cover-icon">▶</span>
+              <img src="assets/social/honlink-cover.jpg" alt="案例解读丨三度携手 续写重庆「HonLink 汉·林间」精装产品" />
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">品牌案例文案 · Case Study</div>
+              <div class="content-card-title">案例解读丨三度携手 续写重庆「HonLink 汉·林间」精装产品</div>
+              <div class="content-card-title-en">ECOFLEX × HonGuo — Case Study</div>
+            </div>
+            <div class="content-card-toggle">+</div>
+          </div>
+          <div class="content-card-body">
+            <div class="content-card-body-inner">
+              <p class="content-card-text">继广州汉国大厦、深圳汉国中心两大项目圆满落地后，近期 ECOFLEX 再度携手汉国置业，以成熟的装配式绿色精装体系，为汉国位于重庆的「HonLink 汉·林间精装定制办公空间」提供全流程精装装配落地服务，续写双方长期合作的共赢篇章。
+
+本次重庆项目 ECOFLEX 延续一贯坚持的绿色、健康、低碳、智造定位，利用 BIM+设计平台，结合专利磁吸装配产品，最快可以实现21天极速交付，完美匹配汉国置业对高端商办空间的品质要求，为西南商办市场注入绿色办公新活力。
+
+<strong>不止汉国品牌，为何高端商办品牌更愿意长期选择 ECOFLEX？</strong>
+
+<strong>品牌信誉：雇主信任度高，筑牢长远合作根基</strong>
+ECOFLEX 深耕装配式精装领域，凭借稳定的品质输出与良好口碑，积累了高雇主信任度，这也是汉国置业从广州、深圳到重庆持续选择 ECOFLEX 的核心底气。所有部品多重质检，务求实现产品零返工、空间零投诉、交付零等待；面对多城跨区域需求，始终保持标准化品控，无隐形增项、无品质偏差。
+
+<strong>服务到位：产品共创赋能企业核心竞争力</strong>
+ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异化产品。装配产品支持反复拆装、随装随用，符合国际 WELL 和 LEED 健康建筑产品标准与国内绿色十环标准，为业主方实施 ESG 运营策略提供便利。
+
+<strong>企业伴飞：全生命周期服务，共成长同发展</strong>
+从项目前期对接全国化战略、搭建跨城交付体系，到交付后的定期巡检、及时维修，再到产品升级阶段结合技术迭代提供优化建议——ECOFLEX 以「企业伴飞」理念，随企业成长适配不同阶段需求。
+
+从单次合作到持续绑定，这份伙伴关系是对 ECOFLEX 实力的认可，更是双方信任同行、协同共赢的最好见证。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 品牌案例文案 2 · 数未来城市设计，还看「设计中国」！ -->
+        <div class="content-card" data-category="case" id="contentCard2">
+          <div class="content-card-head" onclick="toggleContentCard('contentCard2')">
+            <div class="content-card-cover">
+              <img src="assets/social/design-china-cover.webp" alt="数未来城市设计，还看「设计中国」！" />
+            </div>
+            <div class="content-card-meta">
+              <div class="content-card-tag">品牌案例文案 · Case Study</div>
+              <div class="content-card-title">数未来城市设计，还看「设计中国」！</div>
+              <div class="content-card-title-en">Design China — Exhibition Recap</div>
+            </div>
+            <div class="content-card-toggle">+</div>
+          </div>
+          <div class="content-card-body">
+            <div class="content-card-body-inner">
+              <p class="content-card-text">"设计一座城，是设计的初端和划山画海的大开之笔，从此，文明与历史粉墨登场。"
+
+「设计中国」作为中国室内设计领域首个空间实验策展活动，从2018年伊始，到现在已经走过了三年。
+
+中国拥有世界上最富戏剧性的自然景观，高原、山林、湖泊、海岸线，丰富的地理跨度也使这片土地上的地域文化有着万千姿态。为了实现对未来城市生活空间的想象，广州设计周寻找城市设计力量团体——「设计中国」由此诞生。
+
+<strong>2018 设计中国 · 诞生</strong>
+由广州设计周正式推出，联合《现代装饰》杂志和领路营销策划共同发起，是中国室内设计领域首个空间设计实验策展活动。本届邀请了来自长沙、佛山、福州、南昌、上海、武汉、西安7个城市的设计师/设计公司，完成了2018设计中国的惊艳首秀。
+
+<strong>2019 设计中国 · 接棒</strong>
+沿袭上一年的策划运营，旨在树立未来城市设计品牌，搭建地域设计团体交流平台。本届邀请了来自重庆、佛山、福州、广州、嘉兴、南京、湛江7个城市的设计师/设计公司，书写属于他们的城市幻想。
+
+<strong>2020 设计中国 · 破局</strong>
+升级为中国城市设计团体实战赛，以城市为设计单位，展开策展设计并于现场呈现，由设计中国100大观察团现场体验评审并投票产生年度大奖。本届邀请了来自温州、常州、东莞、佛山、福建、广州、南宁7个城市的设计师/设计公司。
+
+<strong>2021 设计中国 · 新生</strong>
+启动全新规则，增设「设计中国最具人气奖」与「设计中国年度先锋榜」，参赛展位升级为可拆卸展位，打造可持续发展、环保展览；并迎来战略合作伙伴东鹏岩板，携手举办全国巡回论坛暨新品发布会。
+
+2021年是设计中国第四年征途，披星戴月，栉风沐雨。12月9-12日，广州设计周约定你来见证最先锋的城市设计！</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 短视频脚本 · 装配式装修 反转找茬脚本 -->
+        <div class="content-card" data-category="script" id="contentCard3">
+          <div class="content-card-head" onclick="toggleContentCard('contentCard3')">
+            <div class="content-card-cover">
+              <img src="assets/social/script-cover.jpg" alt="装配式装修 反转找茬脚本 分镜表" />
             </div>
             <div class="content-card-meta">
               <div class="content-card-tag">短视频脚本 · Script</div>
@@ -1428,94 +1605,6 @@
           </div>
         </div>
 
-        <!-- 2. 公众号文案 / 设计中国 -->
-        <div class="content-card" id="contentCard2">
-          <div class="content-card-head" onclick="toggleContentCard('contentCard2')">
-            <div class="content-card-cover">
-              <!-- TODO: 替换为真实封面图，例如推文首图 -->
-              <span class="content-card-cover-icon">✎</span>
-            </div>
-            <div class="content-card-meta">
-              <div class="content-card-tag">公众号推文 · WeChat Article</div>
-              <div class="content-card-title">数未来城市设计，还看「设计中国」</div>
-              <div class="content-card-title-en">Design China — Exhibition Recap</div>
-            </div>
-            <div class="content-card-toggle">+</div>
-          </div>
-          <div class="content-card-body">
-            <div class="content-card-body-inner">
-              <p class="content-card-text">"设计一座城，是设计的初端和划山画海的大开之笔，从此，文明与历史粉墨登场。"
-
-「设计中国」作为中国室内设计领域首个空间实验策展活动，从2018年伊始，到现在已经走过了三年。
-
-中国拥有世界上最富戏剧性的自然景观，高原、山林、湖泊、海岸线，丰富的地理跨度也使这片土地上的地域文化有着万千姿态。为了实现对未来城市生活空间的想象，广州设计周寻找城市设计力量团体——「设计中国」由此诞生。
-
-<strong>2018 设计中国 · 诞生</strong>
-由广州设计周正式推出，联合《现代装饰》杂志和领路营销策划共同发起，是中国室内设计领域首个空间设计实验策展活动。本届邀请了来自长沙、佛山、福州、南昌、上海、武汉、西安7个城市的设计师/设计公司，完成了2018设计中国的惊艳首秀。
-
-<strong>2019 设计中国 · 接棒</strong>
-沿袭上一年的策划运营，旨在树立未来城市设计品牌，搭建地域设计团体交流平台。本届邀请了来自重庆、佛山、福州、广州、嘉兴、南京、湛江7个城市的设计师/设计公司，书写属于他们的城市幻想。
-
-<strong>2020 设计中国 · 破局</strong>
-升级为中国城市设计团体实战赛，以城市为设计单位，展开策展设计并于现场呈现，由设计中国100大观察团现场体验评审并投票产生年度大奖。本届邀请了来自温州、常州、东莞、佛山、福建、广州、南宁7个城市的设计师/设计公司。
-
-<strong>2021 设计中国 · 新生</strong>
-启动全新规则，增设「设计中国最具人气奖」与「设计中国年度先锋榜」，参赛展位升级为可拆卸展位，打造可持续发展、环保展览；并迎来战略合作伙伴东鹏岩板，携手举办全国巡回论坛暨新品发布会。
-
-2021年是设计中国第四年征途，披星戴月，栉风沐雨。12月9-12日，广州设计周约定你来见证最先锋的城市设计！</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. 案例解读 / ECOFLEX HonLink -->
-        <div class="content-card" id="contentCard3">
-          <div class="content-card-head" onclick="toggleContentCard('contentCard3')">
-            <div class="content-card-cover">
-              <!-- TODO: 替换为真实封面图，例如项目实景图 -->
-              <span class="content-card-cover-icon">◆</span>
-            </div>
-            <div class="content-card-meta">
-              <div class="content-card-tag">品牌案例文案 · Case Study</div>
-              <div class="content-card-title">三度携手，续写重庆「HonLink 汉·林间」</div>
-              <div class="content-card-title-en">ECOFLEX × HonGuo — Case Study</div>
-            </div>
-            <div class="content-card-toggle">+</div>
-          </div>
-          <div class="content-card-body">
-            <div class="content-card-body-inner">
-              <p class="content-card-text">继广州汉国大厦、深圳汉国中心两大项目圆满落地后，近期 ECOFLEX 再度携手汉国置业，以成熟的装配式绿色精装体系，为汉国位于重庆的「HonLink 汉·林间精装定制办公空间」提供全流程精装装配落地服务，续写双方长期合作的共赢篇章。
-
-本次重庆项目 ECOFLEX 延续一贯坚持的绿色、健康、低碳、智造定位，利用 BIM+设计平台，结合专利磁吸装配产品，最快可以实现21天极速交付，完美匹配汉国置业对高端商办空间的品质要求，为西南商办市场注入绿色办公新活力。
-
-<strong>不止汉国品牌，为何高端商办品牌更愿意长期选择 ECOFLEX？</strong>
-
-<strong>品牌信誉：雇主信任度高，筑牢长远合作根基</strong>
-ECOFLEX 深耕装配式精装领域，凭借稳定的品质输出与良好口碑，积累了高雇主信任度，这也是汉国置业从广州、深圳到重庆持续选择 ECOFLEX 的核心底气。所有部品多重质检，务求实现产品零返工、空间零投诉、交付零等待；面对多城跨区域需求，始终保持标准化品控，无隐形增项、无品质偏差。
-
-<strong>服务到位：产品共创赋能企业核心竞争力</strong>
-ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异化产品。装配产品支持反复拆装、随装随用，符合国际 WELL 和 LEED 健康建筑产品标准与国内绿色十环标准，为业主方实施 ESG 运营策略提供便利。
-
-<strong>企业伴飞：全生命周期服务，共成长同发展</strong>
-从项目前期对接全国化战略、搭建跨城交付体系，到交付后的定期巡检、及时维修，再到产品升级阶段结合技术迭代提供优化建议——ECOFLEX 以「企业伴飞」理念，随企业成长适配不同阶段需求。
-
-从单次合作到持续绑定，这份伙伴关系是对 ECOFLEX 实力的认可，更是双方信任同行、协同共赢的最好见证。</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="content-links">
-        <p class="content-links-label">延伸阅读 · Read More</p>
-        <!-- TODO: 替换为真实链接标题与网址 -->
-        <a class="content-link-item" href="#" target="_blank">
-          <span>链接标题 1（待补充）</span><span class="arrow">→</span>
-        </a>
-        <a class="content-link-item" href="#" target="_blank">
-          <span>链接标题 2（待补充）</span><span class="arrow">→</span>
-        </a>
-        <a class="content-link-item" href="#" target="_blank">
-          <span>链接标题 3（待补充）</span><span class="arrow">→</span>
-        </a>
       </div>
     </div>
   </div>
@@ -1668,41 +1757,38 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // Experience: cursor-following hover image (reveals a photo near the pointer
-    // while hovering a timeline entry that has data-hover-img, with light spring easing)
-    (function initTimelineHoverImage() {
+    // Experience: scroll-triggered reveal image (as the user scrolls the page,
+    // whichever timeline entry crosses the centre of the viewport automatically
+    // shows its photo — no hover needed, works on desktop and mobile alike)
+    (function initTimelineScrollImage() {
       const area = document.getElementById('timelineHoverArea');
       const img = document.getElementById('timelineHoverImg');
-      const section = document.getElementById('experience');
-      if (!area || !img || !section) return;
+      if (!area || !img) return;
 
-      let targetX = 0, targetY = 0, curX = 0, curY = 0;
-      let raf = null;
+      const items = Array.from(area.querySelectorAll('.timeline-item[data-hover-img]'));
+      if (!items.length) return;
 
-      function animate() {
-        curX += (targetX - curX) * 0.18;
-        curY += (targetY - curY) * 0.18;
-        img.style.transform = `translate(${curX}px, ${curY}px)`;
-        raf = requestAnimationFrame(animate);
-      }
-      raf = requestAnimationFrame(animate);
-
-      function updateTarget(e) {
-        const rect = section.getBoundingClientRect();
-        targetX = e.clientX - rect.left - img.offsetWidth / 2;
-        targetY = e.clientY - rect.top - img.offsetHeight / 2;
-      }
-
-      area.querySelectorAll('.timeline-item[data-hover-img]').forEach(item => {
-        item.addEventListener('mouseenter', (e) => {
-          img.src = item.getAttribute('data-hover-img');
-          updateTarget(e);
-          curX = targetX; curY = targetY; // snap in at entry point, then spring on move
+      // A thin horizontal band around the vertical centre of the viewport acts
+      // as the trigger line; whichever item is crossing it becomes active.
+      const itemObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          const src = entry.target.getAttribute('data-hover-img');
+          if (img.getAttribute('src') !== src) img.src = src;
           img.classList.add('visible');
         });
-        item.addEventListener('mousemove', updateTarget);
-        item.addEventListener('mouseleave', () => img.classList.remove('visible'));
-      });
+      }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+      items.forEach(item => itemObserver.observe(item));
+
+      // Hide the photo once the whole timeline has scrolled out of view
+      // (e.g. above the section or past the last entry).
+      const areaObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) img.classList.remove('visible');
+        });
+      }, { threshold: 0 });
+      areaObserver.observe(area);
     })();
 
     // Portfolio expand modal (click a category card -> gallery of that category's work)
@@ -1905,6 +1991,26 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
       if (!card) return;
       card.classList.toggle('expanded');
     }
+
+    // Social media content: filter tabs (全部 / 公众号推文 / 品牌案例文案 / 短视频脚本)
+    (function initContentFilters() {
+      const bar = document.getElementById('contentFilters');
+      const accordion = document.getElementById('contentAccordion');
+      if (!bar || !accordion) return;
+      const buttons = Array.from(bar.querySelectorAll('.content-filter-btn'));
+      const cards = Array.from(accordion.querySelectorAll('.content-card'));
+
+      bar.addEventListener('click', (e) => {
+        const btn = e.target.closest('.content-filter-btn');
+        if (!btn) return;
+        const filter = btn.getAttribute('data-filter');
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+        cards.forEach(card => {
+          const match = filter === 'all' || card.getAttribute('data-category') === filter;
+          card.hidden = !match;
+        });
+      });
+    })();
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
