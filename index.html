@@ -1191,7 +1191,7 @@
 
     <!-- Venus removed -->
     <div class="hero-flower-wrap">
-      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline poster="assets/hero-flower-poster.jpg">
+      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline preload="auto" fetchpriority="high" poster="assets/hero-flower-poster.jpg">
         <source src="assets/hero-flower-wind.mp4" type="video/mp4">
       </video>
       <canvas id="heroFlowerCanvas"></canvas>
@@ -1642,8 +1642,8 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
 
 
   <script>
-    // Real per-pixel alpha matte for the hero flower video (black background -> true transparency,
-    // colors preserved instead of washed out by CSS blend modes)
+    // Real per-pixel alpha matte for the hero flower video (pale background ->
+    // true transparency, colors preserved instead of washed out by CSS blend modes)
     (function initHeroFlowerMatte() {
       const video = document.getElementById('heroFlowerVideo');
       const canvas = document.getElementById('heroFlowerCanvas');
@@ -1655,10 +1655,25 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
       // so a flat average left a faint grey residue along the bottom edge. Bilinear tracks that falloff.
       let bgTL = [0, 0, 0], bgTR = [0, 0, 0], bgBL = [0, 0, 0], bgBR = [0, 0, 0];
 
+      // Reused every frame instead of reallocated, to avoid GC churn — sized once
+      // resize() knows the final canvas dimensions.
+      let alphaBuf = null, tmpBuf = null, dilatedBuf = null;
+
       function resize() {
         if (!video.videoWidth) return;
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        // Cap the processing resolution instead of using the raw video size —
+        // the chroma-key loop below is O(w*h) per frame, so this is the single
+        // biggest lever for CPU cost. The canvas is displayed via CSS at
+        // 100%/100% (object-fit: cover), so a capped internal resolution still
+        // looks sharp once scaled up, just costs a fraction of the pixels.
+        const MAX_DIM = 960;
+        const scale = Math.min(1, MAX_DIM / Math.max(video.videoWidth, video.videoHeight));
+        canvas.width = Math.round(video.videoWidth * scale);
+        canvas.height = Math.round(video.videoHeight * scale);
+        const n = canvas.width * canvas.height;
+        alphaBuf = new Uint8ClampedArray(n);
+        tmpBuf = new Uint8ClampedArray(n);
+        dilatedBuf = new Uint8ClampedArray(n);
         sized = true;
       }
 
@@ -1702,17 +1717,99 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
       const RESAMPLE_EVERY = 6; // frames between background re-samples (~10x/sec at 60fps)
       let frameCount = 0;
 
+      // Skip every other frame for the expensive pixel loop — the wind-sway
+      // motion is slow enough that ~30fps keying reads as smooth as 60fps,
+      // and this halves the steady-state CPU cost.
+      const PROCESS_EVERY = 2;
+
+      // This footage's background is a pale grey vignette, and the overexposed
+      // rim highlights on the petals land on almost the same pale grey — their
+      // color distance from the background is tiny, so pure color-distance
+      // keying was punching small transparent holes straight through those
+      // highlights. A morphological "closing" pass (dilate then erode the
+      // alpha mask) fills holes that small without meaningfully growing the
+      // flower's actual silhouette, since solid regions dilate and then
+      // shrink back to ~their original extent.
+      const CLOSE_RADIUS = 5;
+
+      function maxFilterH(src, dst, w, h, r) {
+        for (let y = 0; y < h; y++) {
+          const row = y * w;
+          for (let x = 0; x < w; x++) {
+            let m = 0;
+            const xs = Math.max(0, x - r), xe = Math.min(w - 1, x + r);
+            for (let xx = xs; xx <= xe; xx++) { const v = src[row + xx]; if (v > m) m = v; }
+            dst[row + x] = m;
+          }
+        }
+      }
+      function maxFilterV(src, dst, w, h, r) {
+        for (let x = 0; x < w; x++) {
+          for (let y = 0; y < h; y++) {
+            let m = 0;
+            const ys = Math.max(0, y - r), ye = Math.min(h - 1, y + r);
+            for (let yy = ys; yy <= ye; yy++) { const v = src[yy * w + x]; if (v > m) m = v; }
+            dst[y * w + x] = m;
+          }
+        }
+      }
+      function minFilterH(src, dst, w, h, r) {
+        for (let y = 0; y < h; y++) {
+          const row = y * w;
+          for (let x = 0; x < w; x++) {
+            let m = 255;
+            const xs = Math.max(0, x - r), xe = Math.min(w - 1, x + r);
+            for (let xx = xs; xx <= xe; xx++) { const v = src[row + xx]; if (v < m) m = v; }
+            dst[row + x] = m;
+          }
+        }
+      }
+      function minFilterV(src, dst, w, h, r) {
+        for (let x = 0; x < w; x++) {
+          for (let y = 0; y < h; y++) {
+            let m = 255;
+            const ys = Math.max(0, y - r), ye = Math.min(h - 1, y + r);
+            for (let yy = ys; yy <= ye; yy++) { const v = src[yy * w + x]; if (v < m) m = v; }
+            dst[y * w + x] = m;
+          }
+        }
+      }
+      // Closing = dilate (max) then erode (min), separable for speed.
+      function closeAlpha(alpha, tmp, dilated, w, h, r) {
+        maxFilterH(alpha, tmp, w, h, r);
+        maxFilterV(tmp, dilated, w, h, r);
+        minFilterH(dilated, tmp, w, h, r);
+        minFilterV(tmp, alpha, w, h, r);
+      }
+
+      // Pause the video and stop the per-frame keying entirely once the hero
+      // section scrolls out of view, instead of burning CPU/battery on a
+      // canvas nobody can see.
+      let heroVisible = true;
+      const heroSection = document.getElementById('hero');
+      if (heroSection && 'IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            heroVisible = entry.isIntersecting;
+            if (heroVisible) { video.play().catch(() => {}); }
+            else { video.pause(); }
+          });
+        }, { threshold: 0 }).observe(heroSection);
+      }
+
       function draw() {
         try {
-          if (sized && video.readyState >= 2) {
+          if (heroVisible && sized && video.readyState >= 2 && frameCount % PROCESS_EVERY === 0) {
             const w = canvas.width, h = canvas.height;
             ctx.drawImage(video, 0, 0, w, h);
-            if (frameCount % RESAMPLE_EVERY === 0) sampleBackgroundFromCanvas(w, h);
-            frameCount++;
+            if (frameCount % (RESAMPLE_EVERY * PROCESS_EVERY) === 0) sampleBackgroundFromCanvas(w, h);
             const frame = ctx.getImageData(0, 0, w, h);
             const d = frame.data;
             const span = FAR - NEAR;
             const wm1 = Math.max(1, w - 1), hm1 = Math.max(1, h - 1);
+
+            // Pass 1: raw color-distance alpha per pixel (petal highlights that
+            // match the pale background will read low here — that's fixed below).
             for (let y = 0; y < h; y++) {
               const fy = y / hm1;
               for (let x = 0; x < w; x++) {
@@ -1733,17 +1830,32 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
                 const dist = Math.sqrt(dr * dr + dg * dg + db * db);
                 let t = (dist - NEAR) / span;
                 if (t < 0) t = 0; else if (t > 1) t = 1;
-                const alpha = t * t * (3 - 2 * t); // smoothstep for a softer edge than a hard linear ramp
-                d[i + 3] = Math.round(alpha * 255);
-                if (alpha > 0.02) {
-                  d[i]     = r + (255 - r) * LIFT * alpha;
-                  d[i + 1] = g + (255 - g) * LIFT * alpha;
-                  d[i + 2] = b + (255 - b) * LIFT * alpha;
+                const a = t * t * (3 - 2 * t); // smoothstep for a softer edge than a hard linear ramp
+                alphaBuf[y * w + x] = Math.round(a * 255);
+              }
+            }
+
+            // Pass 2: close small holes (the mis-keyed highlights) without
+            // eating into the true silhouette.
+            closeAlpha(alphaBuf, tmpBuf, dilatedBuf, w, h, CLOSE_RADIUS);
+
+            // Pass 3: write the closed alpha back and brighten foreground pixels.
+            for (let y = 0; y < h; y++) {
+              for (let x = 0; x < w; x++) {
+                const p = y * w + x, i = p * 4;
+                const a255 = alphaBuf[p];
+                d[i + 3] = a255;
+                if (a255 > 5) {
+                  const af = a255 / 255;
+                  d[i]     = d[i]     + (255 - d[i])     * LIFT * af;
+                  d[i + 1] = d[i + 1] + (255 - d[i + 1]) * LIFT * af;
+                  d[i + 2] = d[i + 2] + (255 - d[i + 2]) * LIFT * af;
                 }
               }
             }
             ctx.putImageData(frame, 0, 0);
           }
+          frameCount++;
         } catch (err) {
           // Never let a draw error kill the loop
         }
