@@ -228,6 +228,8 @@
     }
 
     #heroFlowerCanvas {
+      position: relative;
+      z-index: 1;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -239,6 +241,28 @@
       transform: scale(0.94);
       transform-origin: center bottom;
     }
+
+    /* Static fallback: the video's first frame (the closed bud), pre-matted to a
+       transparent PNG and sitting directly underneath the canvas. It shows the
+       instant the page loads — no video buffering, no JS, nothing to fail — so
+       there's never a moment with an empty hero. Once the video actually plays,
+       the canvas draws opaque frames on top of it and this is naturally covered;
+       if the video is slow, blocked, or errors out entirely, this stays visible
+       as the permanent fallback instead of a blank space.
+       Same sizing/position as the canvas above so the handoff lines up exactly. */
+    #heroFlowerPoster {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center bottom;
+      transform: scale(0.94);
+      transform-origin: center bottom;
+      z-index: 0;
+      transition: opacity 0.6s ease;
+    }
+    #heroFlowerPoster.is-hidden { opacity: 0; }
 
     @keyframes drift1 {
       0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
@@ -1185,9 +1209,10 @@
 
     <!-- Venus removed -->
     <div class="hero-flower-wrap">
-      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline preload="auto" fetchpriority="high" poster="assets/hero-flower-poster.jpg">
-        <source src="assets/hero-flower-black.mp4" type="video/mp4">
+      <video id="heroFlowerVideo" class="hero-flower" autoplay muted loop playsinline preload="auto" fetchpriority="high" poster="assets/hero-flower-poster.png">
+        <source src="assets/hero-flower-wind.mp4" type="video/mp4">
       </video>
+      <img id="heroFlowerPoster" src="assets/hero-flower-poster.png" alt="" aria-hidden="true"/>
       <canvas id="heroFlowerCanvas"></canvas>
     </div>
 
@@ -1847,6 +1872,14 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
               }
             }
             ctx.putImageData(frame, 0, 0);
+            // First real frame is on the canvas now — fade out the static
+            // poster underneath so the handoff feels intentional rather than
+            // an abrupt swap. Only fires once.
+            if (!posterHidden) {
+              posterHidden = true;
+              const poster = document.getElementById('heroFlowerPoster');
+              if (poster) poster.classList.add('is-hidden');
+            }
           }
           frameCount++;
         } catch (err) {
@@ -1854,6 +1887,7 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
         }
         requestAnimationFrame(draw);
       }
+      let posterHidden = false;
       requestAnimationFrame(draw);
     })();
 
