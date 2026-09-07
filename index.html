@@ -1068,7 +1068,11 @@
 
     .easter-label { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.5rem; }
 
+    #easterFilters { margin-bottom: 1.5rem; }
+
     .easter-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+    .easter-item[hidden] { display: none; }
 
     .easter-item { position: relative; aspect-ratio: 1; overflow: hidden; cursor: pointer; }
 
@@ -1350,15 +1354,24 @@
       </div>
 
       <div class="fade-in">
-        <p class="easter-label">Things I make when I'm not working</p>
-        <div class="easter-grid">
-          <div class="easter-item"><img src="assets/easter/candle1.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
-          <div class="easter-item"><img src="assets/easter/candle2.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
-          <div class="easter-item"><img src="assets/easter/clay1.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
-          <div class="easter-item"><img src="assets/easter/candle3.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
-          <div class="easter-item"><img src="assets/easter/candle4.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
-          <div class="easter-item"><img src="assets/easter/clay2.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
-          <div class="easter-item"><img src="assets/easter/clay3.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+        <p class="easter-label">Things I make &amp; explore when I'm not working</p>
+        <div class="content-filters" id="easterFilters">
+          <button class="content-filter-btn active" data-filter="all">全部</button>
+          <button class="content-filter-btn" data-filter="craft">手作</button>
+          <button class="content-filter-btn" data-filter="hiking">徒步</button>
+        </div>
+        <div class="easter-grid" id="easterGrid">
+          <div class="easter-item" data-category="craft"><img src="assets/easter/candle1.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item" data-category="craft"><img src="assets/easter/candle2.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item" data-category="craft"><img src="assets/easter/clay1.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+          <div class="easter-item" data-category="craft"><img src="assets/easter/candle3.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item" data-category="craft"><img src="assets/easter/candle4.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Candle Making</span></div></div>
+          <div class="easter-item" data-category="craft"><img src="assets/easter/clay2.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+          <div class="easter-item" data-category="craft"><img src="assets/easter/clay3.png" alt=""/><div class="easter-item-overlay"><span class="easter-item-label">Stone Clay</span></div></div>
+          <div class="easter-item" data-category="hiking"><img src="assets/easter/hiking1.jpg" alt="徒步"/><div class="easter-item-overlay"><span class="easter-item-label">Hiking</span></div></div>
+          <div class="easter-item" data-category="hiking"><img src="assets/easter/hiking2.jpg" alt="徒步"/><div class="easter-item-overlay"><span class="easter-item-label">Hiking</span></div></div>
+          <div class="easter-item" data-category="hiking"><img src="assets/easter/hiking3.jpg" alt="徒步"/><div class="easter-item-overlay"><span class="easter-item-label">Hiking</span></div></div>
+          <div class="easter-item" data-category="hiking"><img src="assets/easter/hiking4.jpg" alt="徒步"/><div class="easter-item-overlay"><span class="easter-item-label">Hiking</span></div></div>
         </div>
       </div>
 
@@ -2168,6 +2181,26 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
       if (!card) return;
       card.classList.toggle('expanded');
     }
+
+    // About Me: "手作 / 徒步" filter tabs for the easter grid
+    (function initEasterFilters() {
+      const bar = document.getElementById('easterFilters');
+      const grid = document.getElementById('easterGrid');
+      if (!bar || !grid) return;
+      const buttons = Array.from(bar.querySelectorAll('.content-filter-btn'));
+      const items = Array.from(grid.querySelectorAll('.easter-item'));
+
+      bar.addEventListener('click', (e) => {
+        const btn = e.target.closest('.content-filter-btn');
+        if (!btn) return;
+        const filter = btn.getAttribute('data-filter');
+        buttons.forEach(b => b.classList.toggle('active', b === btn));
+        items.forEach(item => {
+          const match = filter === 'all' || item.getAttribute('data-category') === filter;
+          item.hidden = !match;
+        });
+      });
+    })();
 
     // Social media content: filter tabs (全部 / 公众号推文 / 品牌案例文案 / 短视频脚本)
     (function initContentFilters() {
