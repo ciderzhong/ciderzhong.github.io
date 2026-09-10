@@ -898,42 +898,31 @@
       .content-card-cover { width: 52px; height: 52px; }
     }
 
-    /* ── VIDEO EDITING: vertical swipe card stack ── */
-    .coverflow {
-      --cf-w: clamp(240px, 32vw, 320px);
-      position: relative;
-      width: 100%;
-    }
-
-    .coverflow-frame {
-      position: relative;
-      overflow: hidden;
-      margin: 0 auto;
-      outline: none;
-    }
-
-    .coverflow-track {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      user-select: none;
+    /* ── VIDEO EDITING: two-column card grid ── */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
     }
 
     .coverflow-card {
-      position: absolute;
-      top: 50%; left: 50%;
-      width: var(--cf-w);
+      position: relative;
       border-radius: 20px;
       overflow: hidden;
       background: #fff;
-      box-shadow: 0 20px 46px rgba(42, 36, 64, 0.2);
-      cursor: grab;
-      will-change: transform, opacity;
+      box-shadow: 0 12px 32px rgba(42, 36, 64, 0.14);
+      cursor: pointer;
       display: flex;
       flex-direction: column;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .coverflow-card:active { cursor: grabbing; }
+    .coverflow-card[hidden] { display: none; }
+
+    .coverflow-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 46px rgba(42, 36, 64, 0.2);
+    }
 
     .coverflow-card-media {
       position: relative;
@@ -987,31 +976,11 @@
       pointer-events: none;
     }
 
-    .coverflow-card.is-active .coverflow-card-play { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-
-    .coverflow-nav {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 50;
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      border: 0.5px solid var(--border);
-      background: rgba(255,255,255,0.75);
-      color: var(--lavender);
-      font-size: 1.05rem;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.25s, color 0.25s;
-    }
-
-    .coverflow-nav:hover { background: var(--lavender); color: #fff; }
-    .coverflow-nav-prev { top: 0; transform: translateX(-50%) rotate(90deg); }
-    .coverflow-nav-next { bottom: 0; transform: translateX(-50%) rotate(-90deg); }
+    .coverflow-card:hover .coverflow-card-play { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
     .coverflow-caption {
       text-align: center;
-      margin-top: 0.5rem;
+      margin-top: 1.5rem;
     }
 
     .coverflow-caption-hint {
@@ -1022,8 +991,9 @@
     }
 
     @media (max-width: 600px) {
-      .coverflow { --cf-w: min(72vw, 300px); }
-      .coverflow-nav { width: 32px; height: 32px; font-size: 1rem; }
+      .video-grid { gap: 0.85rem; }
+      .coverflow-card-body { padding: 0.8rem 0.9rem 1rem; }
+      .coverflow-card-heading { font-size: 0.92rem; }
     }
 
     #experience { border-top: 0.5px solid var(--border); }
@@ -1585,10 +1555,7 @@
         <button class="content-filter-btn" data-filter="case">项目案例</button>
         <button class="content-filter-btn" data-filter="ad">信息流广告</button>
       </div>
-      <div class="coverflow" id="videoCoverflow" tabindex="0">
-        <button type="button" class="coverflow-nav coverflow-nav-prev" aria-label="Previous">‹</button>
-        <div class="coverflow-frame">
-          <div class="coverflow-track">
+      <div class="video-grid" id="videoGrid">
             <div class="coverflow-card" data-category="event" data-link="https://www.bilibili.com/video/BV1bRum6VEBH/?vd_source=a5168279942c7a95879b483a7ca13e83" data-title="湾区拉阔咖啡节" data-subtitle="30s预热视频">
               <div class="coverflow-card-media">
                 <img src="assets/video-posters/bay-area-coffee-festival.jpg" alt="湾区拉阔咖啡节 预热视频" />
@@ -1609,14 +1576,14 @@
                 <p class="coverflow-card-heading">Happy New Year</p>
               </div>
             </div>
-            <div class="coverflow-card" data-category="channel" data-link="https://weixin.qq.com/sph/AA9ivktCla" data-title="ECOFLEX视频号" data-subtitle="《酒店翻新最怕什么？》">
+            <div class="coverflow-card" data-category="channel" data-link="https://weixin.qq.com/sph/AA9ivktCla" data-title="酒店翻新最怕什么？" data-subtitle="设计脚本及剪辑">
               <div class="coverflow-card-media">
-                <img src="assets/video-posters/ECOFLEX-1.jpg" alt="ECOFLEX 视频号" />
+                <img src="assets/video-posters/ECOFLEX-1.jpg" alt="酒店翻新最怕什么？" />
                 <div class="coverflow-card-play">▶</div>
               </div>
               <div class="coverflow-card-body">
-                <p class="coverflow-card-eyebrow">《酒店翻新最怕什么？》</p>
-                <p class="coverflow-card-heading">ECOFLEX视频号</p>
+                <p class="coverflow-card-eyebrow">设计脚本及剪辑</p>
+                <p class="coverflow-card-heading">酒店翻新最怕什么？</p>
               </div>
             </div>
             <div class="coverflow-card" data-category="channel" data-link="https://weixin.qq.com/sph/AwTwQolpKt" data-title="给你10个爱上装配式办公空间的理由" data-subtitle="设计脚本及剪辑">
@@ -1689,12 +1656,9 @@
                 <p class="coverflow-card-heading">广州汉国大厦Honlink汉林间</p>
               </div>
             </div>
-          </div>
-        </div>
-        <button type="button" class="coverflow-nav coverflow-nav-next" aria-label="Next">›</button>
       </div>
       <div class="coverflow-caption">
-        <p class="coverflow-caption-hint">上下滑动查看更多 · 点击卡片播放视频</p>
+        <p class="coverflow-caption-hint">点击卡片播放视频</p>
       </div>
     </div>
   </div>
@@ -2274,101 +2238,13 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
     const videoLightbox = document.getElementById('videoLightbox');
     const videoLightboxPlayer = document.getElementById('videoLightboxPlayer');
 
-    // ── Video Editing: coverflow carousel ──
-    (function initCoverflow() {
-      const root = document.getElementById('videoCoverflow');
-      if (!root) return;
-      const frame = root.querySelector('.coverflow-frame');
-      const allCards = Array.from(root.querySelectorAll('.coverflow-card'));
+    // ── Video Editing: two-column grid, normal page scroll ──
+    (function initVideoGrid() {
+      const grid = document.getElementById('videoGrid');
+      if (!grid) return;
+      const cards = Array.from(grid.querySelectorAll('.coverflow-card'));
       const filterBar = document.getElementById('videoFilters');
-      const prevBtn = root.querySelector('.coverflow-nav-prev');
-      const nextBtn = root.querySelector('.coverflow-nav-next');
-      if (!allCards.length) return;
-
-      const GAP = 0.16;    // vertical spacing between stacked cards, fraction of card height
-      const FADE = 0.55;   // opacity lost per step away from centre
-      const SCALE_STEP = 0.09; // size shrink per step away from centre
-
-      let cards = allCards;   // currently visible (filtered) cards
-      let count = cards.length;
-      let pos = 0;       // fractional index at centre
-      let target = 0;
-      let height = 0;
-      let raf = null;
-      let selected = 0;
-
-      function indexAt(p) { return count ? ((Math.round(p) % count) + count) % count : 0; }
-
-      function paint() {
-        if (!height || !count) return;
-        const pitch = height * (1 + GAP);
-        cards.forEach((card, i) => {
-          let offset = i - pos;
-          offset = ((offset % count) + count) % count;
-          if (offset > count / 2) offset -= count;
-          const distance = Math.abs(offset);
-          const scale = Math.max(0.78, 1 - SCALE_STEP * distance);
-          card.style.transform = `translate(-50%, calc(-50% + ${offset * pitch}px)) scale(${scale})`;
-          const edge = Math.min(1, Math.max(0, count / 2 - distance));
-          card.style.opacity = String(Math.max(0, 1 - FADE * distance) * edge);
-          card.style.zIndex = String(100 - Math.round(distance));
-        });
-      }
-
-      function updateActive() {
-        const card = cards[selected];
-        allCards.forEach(c => c.classList.remove('is-active'));
-        if (card) card.classList.add('is-active');
-      }
-
-      function settle(t) {
-        if (raf !== null) cancelAnimationFrame(raf);
-        target = t;
-        selected = indexAt(t);
-        updateActive();
-        const step = () => {
-          const remaining = target - pos;
-          if (Math.abs(remaining) < 0.0004) {
-            pos = target;
-            paint();
-            raf = null;
-            return;
-          }
-          pos += remaining * 0.18;
-          paint();
-          raf = requestAnimationFrame(step);
-        };
-        raf = requestAnimationFrame(step);
-      }
-
-      function goTo(index) {
-        const t = index + Math.round((target - index) / count) * count;
-        settle(t);
-      }
-
-      function nudge(by) { settle(Math.round(target) + by); }
-
-      function measure() {
-        if (!cards.length) { height = 0; return; }
-        height = cards[0].offsetHeight;
-        if (frame) frame.style.height = Math.round(height * 1.5) + 'px';
-        paint();
-      }
-
-      function applyFilter(filter) {
-        cards = filter === 'all' ? allCards : allCards.filter(c => c.getAttribute('data-category') === filter);
-        allCards.forEach(c => { c.hidden = !cards.includes(c); });
-        count = cards.length;
-        pos = 0; target = 0; selected = 0;
-        measure();
-        settle(0);
-      }
-
-      measure();
-      window.addEventListener('resize', measure);
-
-      if (prevBtn) prevBtn.addEventListener('click', () => nudge(-1));
-      if (nextBtn) nextBtn.addEventListener('click', () => nudge(1));
+      if (!cards.length) return;
 
       if (filterBar) {
         const filterButtons = Array.from(filterBar.querySelectorAll('.content-filter-btn'));
@@ -2376,75 +2252,17 @@ ECOFLEX 与企业共同完成产品共创，打造具备市场竞争力的差异
           const btn = e.target.closest('.content-filter-btn');
           if (!btn) return;
           filterButtons.forEach(b => b.classList.toggle('active', b === btn));
-          applyFilter(btn.getAttribute('data-filter'));
+          const filter = btn.getAttribute('data-filter');
+          cards.forEach(c => { c.hidden = !(filter === 'all' || c.getAttribute('data-category') === filter); });
         });
       }
 
-      root.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowUp') { e.preventDefault(); nudge(-1); }
-        else if (e.key === 'ArrowDown') { e.preventDefault(); nudge(1); }
-        else if (e.key === 'Enter') {
-          const link = cards[selected] && cards[selected].getAttribute('data-link');
-          if (link) window.open(link, '_blank', 'noopener');
-        }
+      grid.addEventListener('click', (e) => {
+        const card = e.target.closest('.coverflow-card');
+        if (!card) return;
+        const link = card.getAttribute('data-link');
+        if (link) window.open(link, '_blank', 'noopener');
       });
-
-      // Pointer drag (vertical) to move through the stack; a tap (little
-      // movement) on a card either opens its link (if already centred) or
-      // brings it to centre.
-      let drag = null;
-      root.addEventListener('pointerdown', (e) => {
-        if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
-        target = pos;
-        drag = { y: e.clientY, startPos: pos, moved: 0 };
-        root.setPointerCapture(e.pointerId);
-      });
-      root.addEventListener('pointermove', (e) => {
-        if (!drag) return;
-        const pitch = height * (1 + GAP);
-        if (!pitch) return;
-        const dy = e.clientY - drag.y;
-        drag.moved = Math.max(drag.moved, Math.abs(dy));
-        pos = drag.startPos - dy / pitch;
-        selected = indexAt(pos);
-        updateActive();
-        paint();
-      });
-      function endDrag(e) {
-        if (!drag) return;
-        const wasClick = drag.moved < 6;
-        const clickedCard = wasClick ? e.target.closest('.coverflow-card') : null;
-        drag = null;
-        if (clickedCard) {
-          const idx = cards.indexOf(clickedCard);
-          if (idx === -1) {
-            // ignore taps on cards hidden by the active filter
-          } else if (idx === selected) {
-            const link = clickedCard.getAttribute('data-link');
-            if (link) window.open(link, '_blank', 'noopener');
-            settle(Math.round(target));
-          } else {
-            goTo(idx);
-          }
-        } else {
-          settle(Math.round(pos));
-        }
-      }
-      root.addEventListener('pointerup', endDrag);
-      root.addEventListener('pointercancel', endDrag);
-
-      // Vertical mouse-wheel scroll also steps through the stack, since the
-      // whole point of this layout is up/down browsing.
-      let wheelLock = false;
-      root.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        if (wheelLock) return;
-        wheelLock = true;
-        nudge(e.deltaY > 0 ? 1 : -1);
-        setTimeout(() => { wheelLock = false; }, 260);
-      }, { passive: false });
-
-      settle(0);
     })();
     function closeVideoLightbox() {
       if (!videoLightboxPlayer) return;
